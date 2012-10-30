@@ -20,12 +20,19 @@ pip-log.txt
 .coverage
 .tox
 
-#Translations
+# Translations
 *.mo
 
-#Mr Developer
+# Mr Developer
 .mr.developer.cfg
 
-#PyCharm
+# PyCharm
 .idea/*
 .idea/libraries/sass_stdlib.xml
+
+# Distribution
+dist/*
+Flask_Classy.egg-info/*
+
+# Mac stuff
+.DS_Store

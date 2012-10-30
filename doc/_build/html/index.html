@@ -1,0 +1,397 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Flask-Classy &mdash; Flask Classy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask Classy 0.1 documentation" href="#" /> 
+  </head>
+  <body>
+  
+  
+  <div class=indexwrapper>
+  
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-flask.ext.classy">
+<span id="flask-classy"></span><h1>Flask-Classy<a class="headerlink" href="#module-flask.ext.classy" title="Permalink to this headline">¶</a></h1>
+<p>Flask-Classy is an extension that adds class-based views to Flask.
+But why?</p>
+<p>I ❤ Flask. Like a lot. But I sometimes projects get a little big
+and need some way of managing and organizing all the different
+pieces. I know what you&#8217;re saying: &#8220;But what about Blueprints?&#8221;</p>
+<p>You&#8217;re right. Blueprints are pretty awesome. But I found that they
+aren&#8217;t always enough to encapsulate a specific context the way I
+need. What I wanted, no what I <em>needed</em> was to be able to group
+my views into relevant classes each with their own context and
+behavior. It&#8217;s also made testing really nifty too.</p>
+<p>&#8220;But Mr. ApiGuy, my projects aren&#8217;t that big. Can Flask-Classy do
+anything else for me besides making a big project easier to manage?&#8221;</p>
+<p>Why yes. It does help a bit with one other thing.</p>
+<p>Flask-Classy makes dealing with multiple HTTP methods for a single
+url or resource much easier by being _smart_ about certain method
+names in your views. For example, if you have a method named <cite>get</cite>
+Flask-Classy will <em>get</em> what you are trying to do and generate
+a route automatically that accepts <em>GET</em> requests!</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Install the extension with:</p>
+<div class="highlight-python"><pre>$ pip install flask-classy</pre>
+</div>
+<p>or if you&#8217;re kickin&#8217; it old-school:</p>
+<div class="highlight-python"><pre>$ easy_install flask-classy</pre>
+</div>
+</div>
+<div class="section" id="let-s-see-how-it-works">
+<h2>Let&#8217;s see how it works<a class="headerlink" href="#let-s-see-how-it-works" title="Permalink to this headline">¶</a></h2>
+<p>If you&#8217;re like me, you probably get a better idea of how to use something
+when you see it being used. Let&#8217;s go ahead and create a little app to
+see how Flask-Classy works:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">flask.ext.classy</span> <span class="kn">import</span> <span class="n">FlaskView</span>
+
+<span class="c"># we&#39;ll make a list to hold some quotes for our app</span>
+<span class="n">quotes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&quot;A noble spirit embiggens the smallest man! ~ Jebediah Springfield&quot;</span><span class="p">,</span>
+    <span class="s">&quot;If there is a way to do it better... find it. ~ Thomas Edison&quot;</span><span class="p">,</span>
+    <span class="s">&quot;No one knows what he can do till he tries. ~ Publilius Syrus&quot;</span>
+<span class="p">]</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">QuotesView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;br&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">quotes</span><span class="p">)</span>
+
+<span class="n">QuotesView</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Run this app and open your web browser to: <a class="reference external" href="http://localhost:5000/quotes/">http://localhost:5000/quotes/</a></p>
+<p>As you can see, it returns the list of quotes. But what if we just wanted
+one quote? What would we do then?</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">QuotesView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">quotes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">quotes</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;Not Found&quot;</span><span class="p">,</span> <span class="mi">404</span>
+</pre></div>
+</div>
+<p>Now direct your browser to: <a class="reference external" href="http://localhost:5000/quotes/1/">http://localhost:5000/quotes/1/</a> and you should
+see the very poignant quote from the esteemed Mr. Edison.</p>
+<p>That&#8217;s cool and all, but what if we just wanted a random quote? What then?
+Let&#8217;s add a random view to our FlaskView:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">QuotesView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">choice</span><span class="p">(</span><span class="n">quotes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And point your browser to: <a class="reference external" href="http://localhost:5000/quotes/random/">http://localhost:5000/quotes/random/</a> and see
+that a random quote is returned each time. Voila!</p>
+<p>So by now you must be keenly aware of the fact that you have not defined a
+single route, but yet routing is obviously taking place. &#8220;Is this voodoo?&#8221;
+you ask?</p>
+<p>Not at all. Flask-Classy will automatically create routes for any method
+in a FlaskView that doesn&#8217;t begin with an underscore character.
+You can still define your own routes of course, and we&#8217;ll look at that next.</p>
+<div class="section" id="using-custom-routes">
+<h3>Using custom routes<a class="headerlink" href="#using-custom-routes" title="Permalink to this headline">¶</a></h3>
+<p>So let&#8217;s pretend that <cite>/quotes/random/</cite> is just too unsightly and we must
+fix it to be something more spectacular forthwith. In a moment of blind
+inspiration we decide that getting a random quote is on par with receiving
+a rasher of your favorite porcine delicacy. The new url should be <cite>/quotes/word_bacon/</cite>
+so that everyone knows what a treat they are in for.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.classy</span> <span class="kn">import</span> <span class="n">FlaskView</span><span class="p">,</span> <span class="n">route</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">QuotesView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/word_bacon/&#39;</span><span class="p">)</span> <span class="c">#&lt;--- Adding route</span>
+    <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">choice</span><span class="p">(</span><span class="n">quotes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Load up <a class="reference external" href="http://localhost/quotes/word_bacon/">http://localhost/quotes/word_bacon/</a> in your browser and behold
+your latest achievement.</p>
+<p>The route decorator takes exactly the same parameters as Flask&#8217;s <cite>app.route</cite>
+decorator, so you should feel right at home adding custom routes to any
+views you create.</p>
+<p>So far, all of our urls have been prefixed by that <cite>/quotes</cite> bit and you
+have probably deduced that it was derived from the name of your FlaskView
+instance (minus the &#8220;View&#8221; suffix, of course.) &#8220;That&#8217;s all well and good,&#8221;
+you&#8217;re saying, &#8220;but how do I change that? What if I want my views at the
+root?&#8221; Well, person, I have an answer for you.</p>
+</div>
+<div class="section" id="customizing-the-route-base">
+<h3>Customizing the Route Base<a class="headerlink" href="#customizing-the-route-base" title="Permalink to this headline">¶</a></h3>
+<p>There are 2 ways to customize the base route of a <cite>FlaskView</cite>. (Well
+technically there are 3 if you count changing the name of the class
+but that&#8217;s hardly a reasonable way to go about it.)</p>
+<div class="section" id="method-1">
+<h4>Method 1:<a class="headerlink" href="#method-1" title="Permalink to this headline">¶</a></h4>
+<p>The first method simply requires you to set a <cite>route_base</cite> attribute on
+your <cite>FlaskView</cite>. Suppose we wanted to make our QuotesView handle the
+root of the web application:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">QuotesView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&#39;/&#39;</span>
+
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/word_bacon/&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="method-2">
+<h4>Method 2:<a class="headerlink" href="#method-2" title="Permalink to this headline">¶</a></h4>
+<p>The second method is perfect for when you&#8217;re using app factories, and
+you need to be able to specify different base routes for different apps.
+You can specify the route when you register the class with the Flask app
+instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">QuotesView</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">route_base</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The second method will always override the first, so you can use method
+one, and override it with method two if needed. Sweet!</p>
+</div>
+</div>
+<div class="section" id="special-method-names">
+<h3>Special method names<a class="headerlink" href="#special-method-names" title="Permalink to this headline">¶</a></h3>
+<p>So I guess I have to break the narrative a bit here so I can take some
+time to talk about <cite>Flask-Classy</cite>&#8216;s special method names.</p>
+<p>Here&#8217;s the thing. <cite>FlaskView</cite> is smart. No, not solving differential
+equations smart, but let&#8217;s just say it knows how to put the round peg
+in the round hole. When you register a <cite>FlaskView</cite> with an app,
+<cite>FlaskView</cite> will look for special methods in your class. Why? Because
+I care. I know that sometimes you just want things to just <em>work</em> and
+not have to think about it. Let&#8217;s look at <cite>FlaskView</cite>&#8216;s very special
+method names:</p>
+<dl class="docutils">
+<dt><strong>index</strong></dt>
+<dd><p class="first">Woah... you&#8217;ve seen this one before! Remember way back at the
+beginning? Oh nevermind. So <em>index</em> is generally used for home pages
+and lists of resources. The automatically generated route is:</p>
+<div class="last highlight-python"><pre>rule:   '/'
+name:   &lt;class name&gt;:index
+method: GET</pre>
+</div>
+</dd>
+<dt><strong>get</strong></dt>
+<dd><p class="first">Another old familiar friend, <cite>get</cite> is usually used to retrieve a
+specific resource. The automatically generated route is:</p>
+<div class="last highlight-python"><pre>rule:   '/&lt;id&gt;/'
+name:   &lt;class name&gt;:get
+method: GET</pre>
+</div>
+</dd>
+<dt><strong>post</strong></dt>
+<dd><p class="first">This method is generally used for creating new instances of a resource
+but can really be used to handle any posted data you want. The
+automatically generated route is:</p>
+<div class="last highlight-python"><pre>rule:   '/'
+name:   &lt;class name&gt;:post
+method: POST</pre>
+</div>
+</dd>
+<dt><strong>put</strong></dt>
+<dd><p class="first">For those of us using REST this one is really helpful. It&#8217;s generally
+used to update a specific resource. The automatically generated route
+is:</p>
+<div class="last highlight-python"><pre>rule:   '/&lt;id&gt;/'
+name:   &lt;class name&gt;:put
+method: PUT</pre>
+</div>
+</dd>
+<dt><strong>delete</strong></dt>
+<dd><p class="first">More RESTfulness. It&#8217;s the most self explanitory of all the RESTful
+methods, and it&#8217;s commonly used to destroy a specific resource. The
+automatically generated route is:</p>
+<div class="last highlight-python"><pre>rule:   '/&lt;id&gt;/'
+name:   &lt;class name&gt;:delete
+method: DELETE</pre>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="your-own-methods-they-re-special-too">
+<h3>Your own methods (they&#8217;re special too!)<a class="headerlink" href="#your-own-methods-they-re-special-too" title="Permalink to this headline">¶</a></h3>
+<p>And lastly, but not leastly, let&#8217;s talk about how you can add your
+own methods (like we did with <cite>random</cite> back in the day, remember?
+Good times.) If you add your own methods <cite>FlaskView</cite> will detect them
+during registration and register routes for them, whether you&#8217;ve
+gone and defined your own, or you just want to let <cite>FlaskView</cite> do it&#8217;s
+thing. By default, <cite>FlaskView</cite> will create a route that is the same as
+the method name. It doesn&#8217;t look for parameters though, so if your
+method takes them and you haven&#8217;t defined a route, you&#8217;re gonna have a
+bad time. That&#8217;ll be coming soon though, so don&#8217;t you worry.</p>
+</div>
+</div>
+<div class="section" id="questions">
+<h2>Questions?<a class="headerlink" href="#questions" title="Permalink to this headline">¶</a></h2>
+<p>Feel free to ping me on twitter &#64;apiguy, or head on over to the
+github repo at <a class="reference external" href="http://github.com/apiguy/flask-classy">http://github.com/apiguy/flask-classy</a> so you can join
+the fun.</p>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="flask.ext.classy.FlaskView">
+<em class="property">class </em><tt class="descclassname">flask.ext.classy.</tt><tt class="descname">FlaskView</tt><a class="headerlink" href="#flask.ext.classy.FlaskView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base view for any class based views implemented with Flask-Classy. Will
+automatically configure routes when registered with a Flask app instance.</p>
+<dl class="classmethod">
+<dt id="flask.ext.classy.FlaskView.build_route_name">
+<em class="property">classmethod </em><tt class="descname">build_route_name</tt><big>(</big><em>method_name</em><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.build_route_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a unique route name based on the combination of the class
+name with the method name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>method_name</strong> &#8211; the method name to use when building a route name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.classy.FlaskView.build_rule">
+<em class="property">classmethod </em><tt class="descname">build_rule</tt><big>(</big><em>rule</em><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.build_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a routing rule based on either the class name (minus the
+&#8216;View&#8217; suffix) or the defined <cite>route_base</cite> attribute of the class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rule</strong> &#8211; the path portion that should be appended to the
+route base</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.classy.FlaskView.find_member_methods">
+<em class="property">classmethod </em><tt class="descname">find_member_methods</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.find_member_methods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of methods that can be routed to</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.classy.FlaskView.make_proxy_method">
+<em class="property">classmethod </em><tt class="descname">make_proxy_method</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.make_proxy_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a proxy function that can be used by Flasks routing. The
+proxy instantiates the FlaskView subclass and calls the appropriate
+method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; the name of the method to create a proxy for</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.classy.FlaskView.register">
+<em class="property">classmethod </em><tt class="descname">register</tt><big>(</big><em>app</em>, <em>route_base=None</em><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers a FlaskView class for use with a specific instance of a
+Flask app. Any methods not prefixes with an underscore are candidates
+to be routed and will have routes registered when this method is
+called.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>app</strong> &#8211; an instance of a Flask application</li>
+<li><strong>route_base</strong> &#8211; the base path to use for all routes registered for
+this class</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="flask.ext.classy.route">
+<tt class="descclassname">flask.ext.classy.</tt><tt class="descname">route</tt><big>(</big><em>rule</em>, <em>**options</em><big>)</big><a class="headerlink" href="#flask.ext.classy.route" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator that is used to define custom routes for methods in
+FlaskView subclasses. The format is exactly the same as Flask&#8217;s
+<cite>&#64;app.route</cite> decorator.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/apiguy/flask-classy"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+  
+
+  
+  </div>
+  
+
+  </body>
+</html>
