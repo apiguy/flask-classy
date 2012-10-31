@@ -16,16 +16,26 @@ need. What I wanted, no what I *needed* was to be able to group
 my views into relevant classes each with their own context and
 behavior. It's also made testing really nifty too.
 
-"But Mr. ApiGuy, my projects aren't that big. Can Flask-Classy do
+"OK, I see your point. But can't I just use the base classes in
+``flask.views`` to do that?"
+
+Well, yes and no. While ``flask.views.MethodView`` does
+provide some of the functionality of ``flask.ext.classy.FlaskView``
+it doesn't quite complete the picture by supporting methods that
+aren't part of the typical CRUD operations for a given resource, or
+make it easy for me to override the route rules for particular view.
+And while ``flask.views.View`` does add some context, it requires
+a class for each view instead of letting me group very similar
+views for the same resource into a single class.
+
+"But my projects aren't that big. Can Flask-Classy do
 anything else for me besides making a big project easier to manage?"
 
 Why yes. It does help a bit with one other thing.
 
-Flask-Classy makes dealing with multiple HTTP methods for a single
-url or resource much easier by being _smart_ about certain method
-names in your views. For example, if you have a method named `get`
-Flask-Classy will *get* what you are trying to do and generate
-a route automatically that accepts *GET* requests!
+`Flask-Classy` will automatically generate routes based on the methods
+in your views, and makes it super simple to override those routes
+using Flask's familiar decorator syntax.
 
 .. _Flask-Classy: http://github.com/apiguy/flask-classy
 .. _Flask: http://flask.pocoo.org/

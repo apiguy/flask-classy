@@ -64,6 +64,7 @@ class FlaskView(object):
                     rule, options = rt
                     rule = cls.build_rule(rule)
                     app.add_url_rule(rule, route_name + str(idx), proxy, **options)
+                del value.routes
 
             elif name in special_methods:
                 methods = None

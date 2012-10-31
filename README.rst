@@ -16,16 +16,26 @@ need. What I wanted, no what I *needed* was to be able to group
 my views into relevant classes each with their own context and
 behavior. It's also made testing really nifty too.
 
-"But Mr. ApiGuy, my projects aren't that big. Can Flask-Classy do
+"OK, I see your point. But can't I just use the base classes in
+``flask.views`` to do that?"
+
+Well, yes and no. While ``flask.views.MethodView`` does
+provide some of the functionality of ``flask.ext.classy.FlaskView``
+it doesn't quite complete the picture by supporting methods that
+aren't part of the typical CRUD operations for a given resource, or
+make it easy for me to override the route rules for particular view.
+And while ``flask.views.View`` does add some context, it requires
+a class for each view instead of letting me group very similar
+views for the same resource into a single class.
+
+"But my projects aren't that big. Can Flask-Classy do
 anything else for me besides making a big project easier to manage?"
 
 Why yes. It does help a bit with one other thing.
 
-Flask-Classy makes dealing with multiple HTTP methods for a single
-url or resource much easier by being _smart_ about certain method
-names in your views. For example, if you have a method named `get`
-Flask-Classy will *get* what you are trying to do and generate
-a route automatically that accepts *GET* requests!
+`Flask-Classy` will automatically generate routes based on the methods
+in your views, and makes it super simple to override those routes
+using Flask's familiar decorator syntax.
 
 .. _Flask-Classy: http://github.com/apiguy/flask-classy
 .. _Flask: http://flask.pocoo.org/
@@ -38,7 +48,7 @@ Install the extension with::
     $ pip install flask-classy
 
 or if you're kickin' it old-school::
-
+    
     $ easy_install flask-classy
 
 Let's see how it works
@@ -265,9 +275,40 @@ Good times.) If you add your own methods `FlaskView` will detect them
 during registration and register routes for them, whether you've
 gone and defined your own, or you just want to let `FlaskView` do it's
 thing. By default, `FlaskView` will create a route that is the same as
-the method name. It doesn't look for parameters though, so if your
-method takes them and you haven't defined a route, you're gonna have a
-bad time. That'll be coming soon though, so don't you worry.
+the method name. So if you define a view method in your `FlaskView`
+like this::
+
+    class SomeView(FlaskView):
+        route_base = "root"
+
+        def my_view(self):
+            return "Check out my view!"
+
+`FlaskView` will generate a route like this::
+
+    rule:   '/some/my_view/'
+    name:   SomeView:my_view0
+    method: GET
+
+"That's fine." you say. "But what if I have a view method with some
+parameters?" Well `FlaskView` will try to take care of that for you
+too. If you were to define another view like this::
+
+    class AnotherView(FlaskView):
+        route_base = "home"
+
+        def this_view(self, arg1, arg2):
+            return "Args: %s, %s" % (arg1, arg2,)
+
+`FlaskView` would generate a route like this::
+
+    rule:   '/home/this_view/<arg1>/<arg2>/'
+    name:   AnotherView:this_view0
+    method: GET
+
+One important thing to note, is that `FlaskView` does not type your
+parameters, so if you want or need them you'll need to define the
+route yourself using the `@route` decorator.
 
 Questions?
 ----------

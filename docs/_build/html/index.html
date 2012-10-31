@@ -50,14 +50,22 @@ aren&#8217;t always enough to encapsulate a specific context the way I
 need. What I wanted, no what I <em>needed</em> was to be able to group
 my views into relevant classes each with their own context and
 behavior. It&#8217;s also made testing really nifty too.</p>
-<p>&#8220;But Mr. ApiGuy, my projects aren&#8217;t that big. Can Flask-Classy do
+<p>&#8220;OK, I see your point. But can&#8217;t I just use the base classes in
+<tt class="docutils literal"><span class="pre">flask.views</span></tt> to do that?&#8221;</p>
+<p>Well, yes and no. While <tt class="docutils literal"><span class="pre">flask.views.MethodView</span></tt> does
+provide some of the functionality of <tt class="docutils literal"><span class="pre">flask.ext.classy.FlaskView</span></tt>
+it doesn&#8217;t quite complete the picture by supporting methods that
+aren&#8217;t part of the typical CRUD operations for a given resource, or
+make it easy for me to override the route rules for particular view.
+And while <tt class="docutils literal"><span class="pre">flask.views.View</span></tt> does add some context, it requires
+a class for each view instead of letting me group very similar
+views for the same resource into a single class.</p>
+<p>&#8220;But my projects aren&#8217;t that big. Can Flask-Classy do
 anything else for me besides making a big project easier to manage?&#8221;</p>
 <p>Why yes. It does help a bit with one other thing.</p>
-<p>Flask-Classy makes dealing with multiple HTTP methods for a single
-url or resource much easier by being _smart_ about certain method
-names in your views. For example, if you have a method named <cite>get</cite>
-Flask-Classy will <em>get</em> what you are trying to do and generate
-a route automatically that accepts <em>GET</em> requests!</p>
+<p><cite>Flask-Classy</cite> will automatically generate routes based on the methods
+in your views, and makes it super simple to override those routes
+using Flask&#8217;s familiar decorator syntax.</p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Install the extension with:</p>
@@ -336,15 +344,21 @@ name with the method name.</p>
 
 <dl class="classmethod">
 <dt id="flask.ext.classy.FlaskView.build_rule">
-<em class="property">classmethod </em><tt class="descname">build_rule</tt><big>(</big><em>rule</em><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.build_rule" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descname">build_rule</tt><big>(</big><em>rule</em>, <em>method=None</em><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.build_rule" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a routing rule based on either the class name (minus the
 &#8216;View&#8217; suffix) or the defined <cite>route_base</cite> attribute of the class</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rule</strong> &#8211; the path portion that should be appended to the
-route base</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rule</strong> &#8211; the path portion that should be appended to the
+route base</li>
+<li><strong>method</strong> &#8211; if a method&#8217;s arguments should be considered when
+constructing the rule, provide a reference to the
+method here. arguments named &#8220;self&#8221; will be ignored</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -354,6 +368,12 @@ route base</td>
 <dt id="flask.ext.classy.FlaskView.find_member_methods">
 <em class="property">classmethod </em><tt class="descname">find_member_methods</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.find_member_methods" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of methods that can be routed to</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.classy.FlaskView.get_route_base">
+<em class="property">classmethod </em><tt class="descname">get_route_base</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.get_route_base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the route base to use for the current class.</p>
 </dd></dl>
 
 <dl class="classmethod">
