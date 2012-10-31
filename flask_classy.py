@@ -81,7 +81,7 @@ class FlaskView(object):
                 app.add_url_rule(rule, route_name, proxy, methods=methods)
 
             else:
-                rule = cls.build_rule('/%s/' % name)
+                rule = cls.build_rule('/%s/' % name, value)
                 app.add_url_rule(rule, route_name, proxy)
 
     @classmethod
@@ -110,13 +110,39 @@ class FlaskView(object):
                 and not member[0].startswith("_")]
 
     @classmethod
-    def build_rule(cls, rule):
+    def build_rule(cls, rule, method=None):
         """Creates a routing rule based on either the class name (minus the
         'View' suffix) or the defined `route_base` attribute of the class
 
         :param rule: the path portion that should be appended to the
                      route base
+
+        :param method: if a method's arguments should be considered when
+                       constructing the rule, provide a reference to the
+                       method here. arguments named "self" will be ignored
         """
+
+        rule_parts = []
+        route_base = cls.get_route_base()
+        if route_base:
+            rule_parts.append(route_base)
+
+        rule = rule.strip("/")
+        if rule:
+            rule_parts.append(rule)
+
+        if method:
+            args = inspect.getargspec(method)[0]
+            for arg in args:
+                if arg != "self":
+                    rule_parts.append("<%s>" % arg)
+
+        return "/%s/" % "/".join(rule_parts)
+
+    @classmethod
+    def get_route_base(cls):
+        """Returns the route base to use for the current class."""
+
         if hasattr(cls, "route_base"):
             route_base = cls.route_base
         else:
@@ -125,13 +151,8 @@ class FlaskView(object):
             else:
                 route_base = cls.__name__.lower()
 
-        if not route_base.startswith("/"):
-            route_base = "/" + route_base
+        return route_base.strip("/")
 
-        if route_base.endswith("/") and rule.startswith("/"):
-            rule = rule.lstrip("/")
-
-        return route_base + rule
 
     @classmethod
     def build_route_name(cls, method_name):

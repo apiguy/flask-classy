@@ -265,9 +265,40 @@ Good times.) If you add your own methods `FlaskView` will detect them
 during registration and register routes for them, whether you've
 gone and defined your own, or you just want to let `FlaskView` do it's
 thing. By default, `FlaskView` will create a route that is the same as
-the method name. It doesn't look for parameters though, so if your
-method takes them and you haven't defined a route, you're gonna have a
-bad time. That'll be coming soon though, so don't you worry.
+the method name. So if you define a view method in your `FlaskView`
+like this::
+
+    class SomeView(FlaskView):
+        route_base = "root"
+
+        def my_view(self):
+            return "Check out my view!"
+
+`FlaskView` will generate a route like this::
+
+    rule:   '/some/my_view/'
+    name:   SomeView:my_view0
+    method: GET
+
+"That's fine." you say. "But what if I have a view method with some
+parameters?" Well `FlaskView` will try to take care of that for you
+too. If you were to define another view like this::
+
+    class AnotherView(FlaskView):
+        route_base = "home"
+
+        def this_view(self, arg1, arg2):
+            return "Args: %s, %s" % (arg1, arg2,)
+
+`FlaskView` would generate a route like this::
+
+    rule:   '/home/this_view/<arg1>/<arg2>/'
+    name:   AnotherView:this_view0
+    method: GET
+
+One important thing to note, is that `FlaskView` does not type your
+parameters, so if you want or need them you'll need to define the
+route yourself using the `@route` decorator.
 
 Questions?
 ----------
@@ -282,4 +313,9 @@ API
 .. autoclass:: flask.ext.classy.FlaskView
     :members:
 
+
 .. autofunction:: flask.ext.classy.route
+
+----
+
+*© Copyright 2012 by Freedom Dumlao*

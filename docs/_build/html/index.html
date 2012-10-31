@@ -272,9 +272,38 @@ Good times.) If you add your own methods <cite>FlaskView</cite> will detect them
 during registration and register routes for them, whether you&#8217;ve
 gone and defined your own, or you just want to let <cite>FlaskView</cite> do it&#8217;s
 thing. By default, <cite>FlaskView</cite> will create a route that is the same as
-the method name. It doesn&#8217;t look for parameters though, so if your
-method takes them and you haven&#8217;t defined a route, you&#8217;re gonna have a
-bad time. That&#8217;ll be coming soon though, so don&#8217;t you worry.</p>
+the method name. So if you define a view method in your <cite>FlaskView</cite>
+like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">SomeView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&quot;root&quot;</span>
+
+    <span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Check out my view!&quot;</span>
+</pre></div>
+</div>
+<p><cite>FlaskView</cite> will generate a route like this:</p>
+<div class="highlight-python"><pre>rule:   '/some/my_view/'
+name:   SomeView:my_view0
+method: GET</pre>
+</div>
+<p>&#8220;That&#8217;s fine.&#8221; you say. &#8220;But what if I have a view method with some
+parameters?&#8221; Well <cite>FlaskView</cite> will try to take care of that for you
+too. If you were to define another view like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">AnotherView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&quot;home&quot;</span>
+
+    <span class="k">def</span> <span class="nf">this_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Args: </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,)</span>
+</pre></div>
+</div>
+<p><cite>FlaskView</cite> would generate a route like this:</p>
+<div class="highlight-python"><pre>rule:   '/home/this_view/&lt;arg1&gt;/&lt;arg2&gt;/'
+name:   AnotherView:this_view0
+method: GET</pre>
+</div>
+<p>One important thing to note, is that <cite>FlaskView</cite> does not type your
+parameters, so if you want or need them you&#8217;ll need to define the
+route yourself using the <cite>&#64;route</cite> decorator.</p>
 </div>
 </div>
 <div class="section" id="questions">
@@ -375,6 +404,8 @@ FlaskView subclasses. The format is exactly the same as Flask&#8217;s
 <cite>&#64;app.route</cite> decorator.</p>
 </dd></dl>
 
+<hr class="docutils" />
+<p><em>© Copyright 2012 by Freedom Dumlao</em></p>
 </div>
 </div>
 

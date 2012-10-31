@@ -31,6 +31,9 @@ class BasicTestView(FlaskView):
     def multi_route(self):
         return "Multi Route"
 
+    def params_view(self, arg1, arg2):
+        return "Params View %s %s" % (arg1, arg2,)
+
 class IndexTestView(FlaskView):
     route_base = "/"
 
@@ -70,7 +73,7 @@ class CommonTestCase(unittest.TestCase):
         self.assertEqual("Other Method", res.data)
 
     def test_routed_method(self):
-        res = self.client.get("/basictest/another")
+        res = self.client.get("/basictest/another/")
         self.assertEqual("Another Method", res.data)
 
         #.Make sure the automatic route wasn't generated
@@ -78,10 +81,14 @@ class CommonTestCase(unittest.TestCase):
         self.assertNotEqual("Another Method", res.data)
 
     def test_multiple_routed_method(self):
-        res = self.client.get("/basictest/route1")
+        res = self.client.get("/basictest/route1/")
         self.assertEqual("Multi Route", res.data)
-        res = self.client.get("/basictest/route2")
+        res = self.client.get("/basictest/route2/")
         self.assertEqual("Multi Route", res.data)
+
+    def test_params_view(self):
+        res = self.client.get("/basictest/params_view/1234/5678/")
+        self.assertEqual("Params View 1234 5678", res.data)
 
     def test_index_route_base(self):
         res = self.client.get("/")
