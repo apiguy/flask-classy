@@ -46,6 +46,9 @@ class FlaskView(object):
             raise TypeError("cls must be a subclass of FlaskVew, not FlaskView itself")
 
         if route_base:
+            if hasattr(cls, "route_base"):
+                cls.orig_route_base = cls.route_base
+
             cls.route_base = route_base
 
         members = cls.find_member_methods()
@@ -83,6 +86,10 @@ class FlaskView(object):
             else:
                 rule = cls.build_rule('/%s/' % name, value)
                 app.add_url_rule(rule, route_name, proxy)
+
+        if hasattr(cls, "orig_route_base"):
+            cls.route_base = cls.orig_route_base
+            del cls.orig_route_base
 
     @classmethod
     def make_proxy_method(cls, name):
