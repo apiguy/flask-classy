@@ -16,7 +16,10 @@ def route(rule, **options):
     `@app.route` decorator.
     """
     def decorator(f):
-        f.route = (rule, options)
+        if not hasattr(f, "routes"):
+            f.routes = [(rule, options)]
+        else:
+            f.routes.append((rule, options))
         return f
 
     return decorator
@@ -53,10 +56,11 @@ class FlaskView(object):
             proxy = cls.make_proxy_method(name)
             route_name = cls.build_route_name(name)
 
-            if hasattr(value, "route"):
-                rule, options = value.route
-                rule = cls.build_rule(rule)
-                app.add_url_rule(rule, route_name, proxy, **options)
+            if hasattr(value, "routes"):
+                for idx, rt in enumerate(value.routes):
+                    rule, options = rt
+                    rule = cls.build_rule(rule)
+                    app.add_url_rule(rule, route_name + str(idx), proxy, **options)
 
             elif name in special_methods:
                 methods = None
