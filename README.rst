@@ -6,8 +6,8 @@ Flask-Classy
 Flask-Classy is an extension that adds class-based views to Flask.
 But why?
 
-I ❤ Flask. Like a lot. But I sometimes projects get a little big
-and need some way of managing and organizing all the different
+I ❤ Flask. Like a lot. But sometimes projects get a little big
+and I need some way of managing and organizing all the different
 pieces. I know what you're saying: "But what about Blueprints?"
 
 You're right. Blueprints are pretty awesome. But I found that they
