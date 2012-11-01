@@ -52,8 +52,8 @@ class FlaskView(object):
             cls.route_base = route_base
 
         members = cls.find_member_methods()
-        special_methods = ["get", "put", "post", "delete", "index"]
-        id_methods = ["get", "put", "delete"]
+        special_methods = ["get", "put", "patch", "post", "delete", "index"]
+        id_methods = ["get", "put", "patch", "delete"]
 
         for name, value in members:
             proxy = cls.make_proxy_method(name)
@@ -64,18 +64,13 @@ class FlaskView(object):
                     rule, options = rt
                     rule = cls.build_rule(rule)
                     app.add_url_rule(rule, route_name + str(idx), proxy, **options)
-                del value.routes
 
             elif name in special_methods:
                 methods = None
                 if name in ["get", "index"]:
                     methods = ["GET"]
-                elif name == "put":
-                    methods = ["PUT"]
-                elif name == "post":
-                    methods = ["POST"]
-                elif name == "delete":
-                    methods = ["DELETE"]
+                else:
+                    methods = [name.upper()]
 
                 if name in id_methods:
                     rule = "/<id>/"

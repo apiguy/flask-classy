@@ -13,6 +13,9 @@ class BasicTestView(FlaskView):
     def put(self, id):
         return "Put " + id
 
+    def patch(self, id):
+        return "Patch " + id
+
     def post(self):
         return "Post"
 
@@ -59,6 +62,10 @@ class CommonTestCase(unittest.TestCase):
     def test_basic_put(self):
         res = self.client.put("/basictest/1234/")
         self.assertEqual("Put 1234", res.data)
+
+    def test_basic_patch(self):
+        res = self.client.patch("/basictest/1234/")
+        self.assertEqual("Patch 1234", res.data)
 
     def test_basic_post(self):
         res = self.client.post("/basictest/")
