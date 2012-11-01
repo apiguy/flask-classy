@@ -256,6 +256,16 @@ method names:
         name:   <class name>:put
         method: PUT
 
+**patch**
+    Similar to `put`, `patch` is used for updating a resource. Unlike `put`
+    however you only send the parts of the resource you want changed,
+    instead of doing a complete replacement of the resource. The automatically
+    generated route is::
+
+        rule:   '/<id>/'
+        name:   <class name>:patch
+        method: PATCH
+
 **delete**
     More RESTfulness. It's the most self explanitory of all the RESTful
     methods, and it's commonly used to destroy a specific resource. The

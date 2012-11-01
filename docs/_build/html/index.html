@@ -261,6 +261,16 @@ name:   &lt;class name&gt;:put
 method: PUT</pre>
 </div>
 </dd>
+<dt><strong>patch</strong></dt>
+<dd><p class="first">Similar to <cite>put</cite>, <cite>patch</cite> is used for updating a resource. Unlike <cite>put</cite>
+however you only send the parts of the resource you want changed,
+instead of doing a complete replacement of the resource. The automatically
+generated route is:</p>
+<div class="last highlight-python"><pre>rule:   '/&lt;id&gt;/'
+name:   &lt;class name&gt;:patch
+method: PATCH</pre>
+</div>
+</dd>
 <dt><strong>delete</strong></dt>
 <dd><p class="first">More RESTfulness. It&#8217;s the most self explanitory of all the RESTful
 methods, and it&#8217;s commonly used to destroy a specific resource. The
