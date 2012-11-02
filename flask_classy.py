@@ -10,16 +10,19 @@
 
 import inspect
 
+_rule_cache = {}
+
 def route(rule, **options):
     """A decorator that is used to define custom routes for methods in
     FlaskView subclasses. The format is exactly the same as Flask's
     `@app.route` decorator.
     """
     def decorator(f):
-        if not hasattr(f, "routes"):
-            f.routes = [(rule, options)]
-        else:
-            f.routes.append((rule, options))
+        class_name = inspect.stack()[1][3]
+        cache_key = "%s:%s" % (class_name, f.__name__,)
+        if not cache_key in _rule_cache:
+            _rule_cache[cache_key] = []
+        _rule_cache[cache_key].append((rule, options))
         return f
 
     return decorator
@@ -59,8 +62,10 @@ class FlaskView(object):
             proxy = cls.make_proxy_method(name)
             route_name = cls.build_route_name(name)
 
-            if hasattr(value, "routes"):
-                for idx, rt in enumerate(value.routes):
+            cache_key = "%s:%s" % (value.im_class.__name__, name,)
+
+            if cache_key in _rule_cache:
+                for idx, rt in enumerate(_rule_cache[cache_key]):
                     rule, options = rt
                     rule = cls.build_rule(rule)
                     app.add_url_rule(rule, route_name + str(idx), proxy, **options)

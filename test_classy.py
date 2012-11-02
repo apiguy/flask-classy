@@ -2,6 +2,11 @@ import unittest
 from flask import Flask
 from flask_classy import FlaskView, route
 
+def test_decorator(fn):
+    def wrapper(*args, **kwargs):
+        return fn(*args, **kwargs)
+    return wrapper
+
 class BasicTestView(FlaskView):
 
     def index(self):
@@ -34,6 +39,15 @@ class BasicTestView(FlaskView):
     def multi_route(self):
         return "Multi Route"
 
+    @test_decorator
+    @route("/stacked")
+    def stacked_decorators(self):
+        return "Stacked"
+
+    @test_decorator
+    def other_decorator(self):
+        return "Other Decorator"
+
     def params_view(self, arg1, arg2):
         return "Params View %s %s" % (arg1, arg2,)
 
@@ -47,6 +61,7 @@ class CommonTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = Flask(__name__)
+        self.app.debug = True
         self.client = self.app.test_client()
         BasicTestView.register(self.app)
         IndexTestView.register(self.app)
@@ -92,6 +107,14 @@ class CommonTestCase(unittest.TestCase):
         self.assertEqual("Multi Route", res.data)
         res = self.client.get("/basictest/route2/")
         self.assertEqual("Multi Route", res.data)
+
+    def test_stacked_decorators(self):
+        res = self.client.get("/basictest/stacked/")
+        self.assertEqual("Stacked", res.data)
+
+    def test_other_decorator(self):
+        res = self.client.get("/basictest/other_decorator/")
+        self.assertEqual("Other Decorator", res.data)
 
     def test_params_view(self):
         res = self.client.get("/basictest/params_view/1234/5678/")
