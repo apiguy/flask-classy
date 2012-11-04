@@ -57,14 +57,25 @@ class IndexTestView(FlaskView):
     def index(self):
         return "Home Page"
 
+class SubdomainTestView(FlaskView):
+    route_base = "/sub"
+    subdomain = "sub"
+
+    def sub(self):
+        return "Subdomain"
+
 class CommonTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = Flask(__name__)
         self.app.debug = True
+        self.app.config['SERVER_NAME'] = 'test.test'
         self.client = self.app.test_client()
+
         BasicTestView.register(self.app)
         IndexTestView.register(self.app)
+        SubdomainTestView.register(self.app)
+        SubdomainTestView.register(self.app, subdomain="sub2")
 
     def test_basic_index(self):
         res = self.client.get("/basictest/")
@@ -123,6 +134,16 @@ class CommonTestCase(unittest.TestCase):
     def test_index_route_base(self):
         res = self.client.get("/")
         self.assertEqual("Home Page", res.data)
+
+    def test_subdomain(self):
+        res = self.client.get("/sub/sub/")
+        self.assertNotEqual("Subdomain", res.data)
+
+        res = self.client.get("/sub/sub/", base_url='http://sub.test.test/')
+        self.assertEqual("Subdomain", res.data)
+
+        res = self.client.get("/sub/sub/", base_url='http://sub2.test.test/')
+        self.assertEqual("Subdomain", res.data)
 
     def tearDown(self):
         pass

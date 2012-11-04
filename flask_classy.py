@@ -10,30 +10,44 @@
 
 import inspect
 
-_rule_cache = {}
+_temp_rule_cache = None
 
 def route(rule, **options):
     """A decorator that is used to define custom routes for methods in
     FlaskView subclasses. The format is exactly the same as Flask's
     `@app.route` decorator.
     """
+
     def decorator(f):
-        class_name = inspect.stack()[1][3]
-        cache_key = "%s:%s" % (class_name, f.__name__,)
-        if not cache_key in _rule_cache:
-            _rule_cache[cache_key] = []
-        _rule_cache[cache_key].append((rule, options))
+        global _temp_rule_cache
+        if _temp_rule_cache is None:
+            _temp_rule_cache = {f.__name__: [(rule, options)]}
+        elif not f.__name__ in _temp_rule_cache:
+            _temp_rule_cache[f.__name__] = [(rule, options)]
+        else:
+            _temp_rule_cache[f.__name__].append((rule, options))
+
         return f
 
     return decorator
+
+class _FlaskViewMeta(type):
+
+    def __init__(cls, name, bases, dct):
+        global _temp_rule_cache
+        if _temp_rule_cache:
+            cls._rule_cache = _temp_rule_cache
+            _temp_rule_cache = None
 
 class FlaskView(object):
     """Base view for any class based views implemented with Flask-Classy. Will
     automatically configure routes when registered with a Flask app instance.
     """
 
+    __metaclass__ = _FlaskViewMeta
+
     @classmethod
-    def register(cls, app, route_base=None):
+    def register(cls, app, route_base=None, subdomain=None):
         """Registers a FlaskView class for use with a specific instance of a
         Flask app. Any methods not prefixes with an underscore are candidates
         to be routed and will have routes registered when this method is
@@ -54,6 +68,9 @@ class FlaskView(object):
 
             cls.route_base = route_base
 
+        if not subdomain and hasattr(cls, "subdomain"):
+            subdomain = cls.subdomain
+
         members = cls.find_member_methods()
         special_methods = ["get", "put", "patch", "post", "delete", "index"]
         id_methods = ["get", "put", "patch", "delete"]
@@ -62,16 +79,14 @@ class FlaskView(object):
             proxy = cls.make_proxy_method(name)
             route_name = cls.build_route_name(name)
 
-            cache_key = "%s:%s" % (value.im_class.__name__, name,)
-
-            if cache_key in _rule_cache:
-                for idx, rt in enumerate(_rule_cache[cache_key]):
-                    rule, options = rt
+            if hasattr(cls, "_rule_cache") and name in cls._rule_cache:
+                for idx, cached_rule in enumerate(cls._rule_cache[name]):
+                    rule, options = cached_rule
                     rule = cls.build_rule(rule)
-                    app.add_url_rule(rule, route_name + str(idx), proxy, **options)
+                    options = cls.configure_subdomain(options, subdomain)
+                    app.add_url_rule(rule, "%s_%d" % (route_name, idx,), proxy, **options)
 
             elif name in special_methods:
-                methods = None
                 if name in ["get", "index"]:
                     methods = ["GET"]
                 else:
@@ -82,15 +97,24 @@ class FlaskView(object):
                 else:
                     rule = "/"
                 rule = cls.build_rule(rule)
-                app.add_url_rule(rule, route_name, proxy, methods=methods)
+                #options = cls.configure_subdomain(dict(methods=methods), subdomain)
+                app.add_url_rule(rule, route_name, proxy, methods=methods, subdomain=subdomain)
 
             else:
-                rule = cls.build_rule('/%s/' % name, value)
-                app.add_url_rule(rule, route_name, proxy)
+                rule = cls.build_rule('/%s/' % name, value,)
+                app.add_url_rule(rule, route_name, proxy, subdomain=subdomain)
 
         if hasattr(cls, "orig_route_base"):
             cls.route_base = cls.orig_route_base
             del cls.orig_route_base
+
+    @classmethod
+    def configure_subdomain(cls, options, subdomain):
+        if not subdomain: return options
+
+        options["subdomain"] = subdomain
+        return options
+
 
     @classmethod
     def make_proxy_method(cls, name):
