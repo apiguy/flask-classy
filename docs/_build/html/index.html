@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Flask-Classy &mdash; Flask Classy 0.3.4 documentation</title>
+    <title>Flask-Classy &mdash; Flask Classy 0.4 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.3.4',
+        VERSION:     '0.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Flask Classy 0.3.4 documentation" href="#" /> 
+    <link rel="top" title="Flask Classy 0.4 documentation" href="#" /> 
   </head>
   <body>
   
@@ -170,6 +170,13 @@ your latest achievement.</p>
 <p>The route decorator takes exactly the same parameters as Flask&#8217;s <cite>app.route</cite>
 decorator, so you should feel right at home adding custom routes to any
 views you create.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to use other decorators with your views, you&#8217;ll need to
+make sure that the <tt class="docutils literal"><span class="pre">&#64;route</span></tt> decorators are last (closest to the
+method definition). I&#8217;m working on a way to change this requirement
+in a future release.</p>
+</div>
 <p>So far, all of our urls have been prefixed by that <cite>/quotes</cite> bit and you
 have probably deduced that it was derived from the name of your FlaskView
 instance (minus the &#8220;View&#8221; suffix, of course.) &#8220;That&#8217;s all well and good,&#8221;
@@ -230,68 +237,145 @@ method names:</p>
 <dd><p class="first">Woah... you&#8217;ve seen this one before! Remember way back at the
 beginning? Oh nevermind. So <em>index</em> is generally used for home pages
 and lists of resources. The automatically generated route is:</p>
-<div class="last highlight-python"><pre>rule:   '/'
-name:   &lt;class name&gt;:index
-method: GET</pre>
-</div>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/</td>
+</tr>
+<tr class="row-even"><td><strong>name</strong></td>
+<td>&lt;class name&gt;:index</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>GET</td>
+</tr>
+</tbody>
+</table>
 </dd>
 <dt><strong>get</strong></dt>
 <dd><p class="first">Another old familiar friend, <cite>get</cite> is usually used to retrieve a
 specific resource. The automatically generated route is:</p>
-<div class="last highlight-python"><pre>rule:   '/&lt;id&gt;/'
-name:   &lt;class name&gt;:get
-method: GET</pre>
-</div>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/&lt;id&gt;/</td>
+</tr>
+<tr class="row-even"><td><strong>name</strong></td>
+<td>&lt;class name&gt;:get</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>GET</td>
+</tr>
+</tbody>
+</table>
 </dd>
 <dt><strong>post</strong></dt>
 <dd><p class="first">This method is generally used for creating new instances of a resource
 but can really be used to handle any posted data you want. The
 automatically generated route is:</p>
-<div class="last highlight-python"><pre>rule:   '/'
-name:   &lt;class name&gt;:post
-method: POST</pre>
-</div>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/</td>
+</tr>
+<tr class="row-even"><td><strong>name</strong></td>
+<td>&lt;class name&gt;:post</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>POST</td>
+</tr>
+</tbody>
+</table>
 </dd>
 <dt><strong>put</strong></dt>
 <dd><p class="first">For those of us using REST this one is really helpful. It&#8217;s generally
 used to update a specific resource. The automatically generated route
 is:</p>
-<div class="last highlight-python"><pre>rule:   '/&lt;id&gt;/'
-name:   &lt;class name&gt;:put
-method: PUT</pre>
-</div>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/&lt;id&gt;/</td>
+</tr>
+<tr class="row-even"><td><strong>name</strong></td>
+<td>&lt;class name&gt;:put</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>PUT</td>
+</tr>
+</tbody>
+</table>
 </dd>
 <dt><strong>patch</strong></dt>
 <dd><p class="first">Similar to <cite>put</cite>, <cite>patch</cite> is used for updating a resource. Unlike <cite>put</cite>
 however you only send the parts of the resource you want changed,
 instead of doing a complete replacement of the resource. The automatically
 generated route is:</p>
-<div class="last highlight-python"><pre>rule:   '/&lt;id&gt;/'
-name:   &lt;class name&gt;:patch
-method: PATCH</pre>
-</div>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/&lt;id&gt;/</td>
+</tr>
+<tr class="row-even"><td><strong>name</strong></td>
+<td>&lt;class name&gt;:patch</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>PATCH</td>
+</tr>
+</tbody>
+</table>
 </dd>
 <dt><strong>delete</strong></dt>
 <dd><p class="first">More RESTfulness. It&#8217;s the most self explanitory of all the RESTful
 methods, and it&#8217;s commonly used to destroy a specific resource. The
 automatically generated route is:</p>
-<div class="last highlight-python"><pre>rule:   '/&lt;id&gt;/'
-name:   &lt;class name&gt;:delete
-method: DELETE</pre>
-</div>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/&lt;id&gt;/</td>
+</tr>
+<tr class="row-even"><td><strong>name</strong></td>
+<td>&lt;class name&gt;:delete</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>DELETE</td>
+</tr>
+</tbody>
+</table>
 </dd>
 </dl>
 </div>
 <div class="section" id="your-own-methods-they-re-special-too">
 <h3>Your own methods (they&#8217;re special too!)<a class="headerlink" href="#your-own-methods-they-re-special-too" title="Permalink to this headline">¶</a></h3>
-<p>And lastly, but not leastly, let&#8217;s talk about how you can add your
-own methods (like we did with <cite>random</cite> back in the day, remember?
-Good times.) If you add your own methods <cite>FlaskView</cite> will detect them
-during registration and register routes for them, whether you&#8217;ve
-gone and defined your own, or you just want to let <cite>FlaskView</cite> do it&#8217;s
-thing. By default, <cite>FlaskView</cite> will create a route that is the same as
-the method name. So if you define a view method in your <cite>FlaskView</cite>
-like this:</p>
+<p>Let&#8217;s talk about how you can add your own methods (like we did with
+<cite>random</cite> back in the day, remember? Good times.) If you add your own
+methods <cite>FlaskView</cite> will detect them during registration and register
+routes for them, whether you&#8217;ve gone and defined your own, or you just
+want to let <cite>FlaskView</cite> do it&#8217;s thing. By default, <cite>FlaskView</cite> will
+create a route that is the same as the method name. So if you define a
+view method in your <cite>FlaskView</cite> like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">SomeView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
     <span class="n">route_base</span> <span class="o">=</span> <span class="s">&quot;root&quot;</span>
 
@@ -300,10 +384,23 @@ like this:</p>
 </pre></div>
 </div>
 <p><cite>FlaskView</cite> will generate a route like this:</p>
-<div class="highlight-python"><pre>rule:   '/some/my_view/'
-name:   SomeView:my_view0
-method: GET</pre>
-</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>&#8216;/some/my_view/&#8217;</td>
+</tr>
+<tr class="row-even"><td><strong>name</strong></td>
+<td>SomeView:my_view_0</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>GET</td>
+</tr>
+</tbody>
+</table>
 <p>&#8220;That&#8217;s fine.&#8221; you say. &#8220;But what if I have a view method with some
 parameters?&#8221; Well <cite>FlaskView</cite> will try to take care of that for you
 too. If you were to define another view like this:</p>
@@ -315,13 +412,116 @@ too. If you were to define another view like this:</p>
 </pre></div>
 </div>
 <p><cite>FlaskView</cite> would generate a route like this:</p>
-<div class="highlight-python"><pre>rule:   '/home/this_view/&lt;arg1&gt;/&lt;arg2&gt;/'
-name:   AnotherView:this_view0
-method: GET</pre>
-</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/home/this_view/&lt;arg1&gt;/&lt;arg2&gt;/</td>
+</tr>
+<tr class="row-even"><td><strong>name</strong></td>
+<td>AnotherView:this_view_0</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>GET</td>
+</tr>
+</tbody>
+</table>
 <p>One important thing to note, is that <cite>FlaskView</cite> does not type your
 parameters, so if you want or need them you&#8217;ll need to define the
 route yourself using the <cite>&#64;route</cite> decorator.</p>
+</div>
+<div class="section" id="subdomains-getting-advanced-n-stuff">
+<h3>Subdomains (getting advanced &#8216;n stuff)<a class="headerlink" href="#subdomains-getting-advanced-n-stuff" title="Permalink to this headline">¶</a></h3>
+<p>By now, you&#8217;ve built a few hundred <cite>Flask</cite> apps using <cite>Flask-Classy</cite>
+and you probably think you&#8217;re an expert. But not until you&#8217;ve tried
+the snazzy <cite>Subdomains</cite> feature my friend.</p>
+<p>Flask-Classy allows you to specify a subdomain to be used when
+registering routes for your FlaskViews. While the usefulness of this
+feature is probably apparent to many of you, let&#8217;s go ahead and take a
+look at one of the many facilitative use cases.</p>
+<p>Suppose you&#8217;ve got a sweet api you&#8217;re porting over from a legacy app
+and in the migration you want to clean things up a bit and start using
+a subdomain like <tt class="docutils literal"><span class="pre">api.socool.biz</span></tt> instead of the old way of accessing
+it using <tt class="docutils literal"><span class="pre">api</span></tt> at the root of the path like <tt class="docutils literal"><span class="pre">socool.biz/api</span></tt>. The
+only catch, of course, is that you have api clients still using that
+old path based method. What is a hard working developer like you to do?</p>
+<p>Thanks to <cite>Flask</cite> and <cite>Flask-Classy</cite> you have some options. There are two
+easy ways you can choose from to tell <cite>Flask-Classy</cite> which subdomains your
+<tt class="docutils literal"><span class="pre">FlaskView</span></tt> should respond to.</p>
+<p>Let&#8217;s see both methods so you can choose which one works best for your
+application.</p>
+<div class="section" id="the-define-during-registration-method">
+<h4>The Define-During-Registration Method<a class="headerlink" href="#the-define-during-registration-method" title="Permalink to this headline">¶</a></h4>
+<p>Probably the most flexible method, you can define which subdomains you
+want to support at the same time you&#8217;re registering your views:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># views.py</span>
+
+<span class="kn">from</span> <span class="nn">flask.ext.classy</span> <span class="kn">import</span> <span class="n">FlaskView</span>
+
+<span class="k">class</span> <span class="nc">CoolApiView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;API stuff&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># main.py</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">views</span> <span class="kn">import</span> <span class="n">CoolApiView</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;SERVER_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;socool.biz&#39;</span>
+
+<span class="c"># This one matches urls like: http://socool.biz/api/...</span>
+<span class="n">CoolApiView</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">route_base</span><span class="o">=</span><span class="s">&#39;/api/&#39;</span><span class="p">)</span>
+
+<span class="c"># This one matches urls like: http://api.socool.biz/...</span>
+<span class="n">CoolApiView</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">route_base</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">subdomain</span><span class="o">=</span><span class="s">&#39;api&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-explicit-define-in-the-flaskview-method">
+<h4>The Explicit-Define-In-The-FlaskView Method<a class="headerlink" href="#the-explicit-define-in-the-flaskview-method" title="Permalink to this headline">¶</a></h4>
+<p>Using this method, you can explicitly define a subdomain as an attribute of
+the <tt class="docutils literal"><span class="pre">FlaskView</span></tt> subclass:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># views.py</span>
+
+<span class="kn">from</span> <span class="nn">flask.ext.classy</span> <span class="kn">import</span> <span class="n">FlaskView</span>
+
+<span class="k">class</span> <span class="nc">CoolApiView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+    <span class="n">subdomain</span> <span class="o">=</span> <span class="s">&quot;api&quot;</span>
+
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;API Stuff&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># main.py</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">views</span> <span class="kn">import</span> <span class="n">CoolApiView</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;SERVER_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;socool.biz&#39;</span>
+
+<span class="c"># This one matches urls like: http://socool.biz/api/...</span>
+<span class="n">CoolApiView</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">route_base</span><span class="o">=</span><span class="s">&#39;/api/&#39;</span><span class="p">,</span> <span class="n">subdomain</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="c"># This one matches urls like: http://api.socool.biz/...</span>
+<span class="n">CoolApiView</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">route_base</span><span class="o">=</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>As you can see here, specifying the subdomain to the register method will
+override the explicit subdomain attribute set inside the class.</p>
+</div>
 </div>
 </div>
 <div class="section" id="questions">

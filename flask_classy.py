@@ -55,8 +55,12 @@ class FlaskView(object):
 
         :param app: an instance of a Flask application
 
-        :param route_base: the base path to use for all routes registered for
-                           this class
+        :param route_base: The base path to use for all routes registered for
+                           this class. Overrides the route_base attribute if
+                           it has been set.
+
+        :param subdomain:  A subdomain that this registration should use when
+                           configuring routes.
         """
 
         if cls is FlaskView:

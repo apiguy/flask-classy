@@ -161,6 +161,12 @@ The route decorator takes exactly the same parameters as Flask's `app.route`
 decorator, so you should feel right at home adding custom routes to any
 views you create.
 
+.. note::
+    If you want to use other decorators with your views, you'll need to
+    make sure that the ``@route`` decorators are last (closest to the
+    method definition). I'm working on a way to change this requirement
+    in a future release.
+
 So far, all of our urls have been prefixed by that `/quotes` bit and you
 have probably deduced that it was derived from the name of your FlaskView
 instance (minus the "View" suffix, of course.) "That's all well and good,"
@@ -224,69 +230,80 @@ method names:
 **index**
     Woah... you've seen this one before! Remember way back at the
     beginning? Oh nevermind. So *index* is generally used for home pages
-    and lists of resources. The automatically generated route is::
+    and lists of resources. The automatically generated route is:
 
-        rule:   '/'
-        name:   <class name>:index
-        method: GET
+    ========== ================================
+    **rule**   /
+    **name**   <class name>:index
+    **method** GET
+    ========== ================================
 
 **get**
     Another old familiar friend, `get` is usually used to retrieve a
-    specific resource. The automatically generated route is::
+    specific resource. The automatically generated route is:
 
-        rule:   '/<id>/'
-        name:   <class name>:get
-        method: GET
+    ========== ================================
+    **rule**   /<id>/
+    **name**   <class name>:get
+    **method** GET
+    ========== ================================
 
 **post**
     This method is generally used for creating new instances of a resource
     but can really be used to handle any posted data you want. The
-    automatically generated route is::
+    automatically generated route is:
 
-        rule:   '/'
-        name:   <class name>:post
-        method: POST
+    ========== ================================
+    **rule**   /
+    **name**   <class name>:post
+    **method** POST
+    ========== ================================
 
 **put**
     For those of us using REST this one is really helpful. It's generally
     used to update a specific resource. The automatically generated route
-    is::
+    is:
 
-        rule:   '/<id>/'
-        name:   <class name>:put
-        method: PUT
+    ========== ================================
+    **rule**   /<id>/
+    **name**   <class name>:put
+    **method** PUT
+    ========== ================================
 
 **patch**
     Similar to `put`, `patch` is used for updating a resource. Unlike `put`
     however you only send the parts of the resource you want changed,
     instead of doing a complete replacement of the resource. The automatically
-    generated route is::
+    generated route is:
 
-        rule:   '/<id>/'
-        name:   <class name>:patch
-        method: PATCH
+    ========== ================================
+    **rule**   /<id>/
+    **name**   <class name>:patch
+    **method** PATCH
+    ========== ================================
 
 **delete**
     More RESTfulness. It's the most self explanitory of all the RESTful
     methods, and it's commonly used to destroy a specific resource. The
-    automatically generated route is::
+    automatically generated route is:
 
-        rule:   '/<id>/'
-        name:   <class name>:delete
-        method: DELETE
+    ========== ================================
+    **rule**   /<id>/
+    **name**   <class name>:delete
+    **method** DELETE
+    ========== ================================
 
 
 Your own methods (they're special too!)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-And lastly, but not leastly, let's talk about how you can add your
-own methods (like we did with `random` back in the day, remember?
-Good times.) If you add your own methods `FlaskView` will detect them
-during registration and register routes for them, whether you've
-gone and defined your own, or you just want to let `FlaskView` do it's
-thing. By default, `FlaskView` will create a route that is the same as
-the method name. So if you define a view method in your `FlaskView`
-like this::
+Let's talk about how you can add your own methods (like we did with
+`random` back in the day, remember? Good times.) If you add your own
+methods `FlaskView` will detect them during registration and register
+routes for them, whether you've gone and defined your own, or you just
+want to let `FlaskView` do it's thing. By default, `FlaskView` will
+create a route that is the same as the method name. So if you define a
+view method in your `FlaskView` like this::
 
     class SomeView(FlaskView):
         route_base = "root"
@@ -294,11 +311,13 @@ like this::
         def my_view(self):
             return "Check out my view!"
 
-`FlaskView` will generate a route like this::
+`FlaskView` will generate a route like this:
 
-    rule:   '/some/my_view/'
-    name:   SomeView:my_view0
-    method: GET
+========== ================================
+**rule**      '/some/my_view/'
+**name**      SomeView:my_view_0
+**method**    GET
+========== ================================
 
 "That's fine." you say. "But what if I have a view method with some
 parameters?" Well `FlaskView` will try to take care of that for you
@@ -310,15 +329,116 @@ too. If you were to define another view like this::
         def this_view(self, arg1, arg2):
             return "Args: %s, %s" % (arg1, arg2,)
 
-`FlaskView` would generate a route like this::
+`FlaskView` would generate a route like this:
 
-    rule:   '/home/this_view/<arg1>/<arg2>/'
-    name:   AnotherView:this_view0
-    method: GET
+========== ================================
+**rule**   /home/this_view/<arg1>/<arg2>/
+**name**   AnotherView:this_view_0
+**method** GET
+========== ================================
 
 One important thing to note, is that `FlaskView` does not type your
 parameters, so if you want or need them you'll need to define the
 route yourself using the `@route` decorator.
+
+Subdomains (getting advanced 'n stuff)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By now, you've built a few hundred `Flask` apps using `Flask-Classy`
+and you probably think you're an expert. But not until you've tried
+the snazzy `Subdomains` feature my friend.
+
+Flask-Classy allows you to specify a subdomain to be used when
+registering routes for your FlaskViews. While the usefulness of this
+feature is probably apparent to many of you, let's go ahead and take a
+look at one of the many facilitative use cases.
+
+Suppose you've got a sweet api you're porting over from a legacy app
+and in the migration you want to clean things up a bit and start using
+a subdomain like ``api.socool.biz`` instead of the old way of accessing
+it using ``api`` at the root of the path like ``socool.biz/api``. The
+only catch, of course, is that you have api clients still using that
+old path based method. What is a hard working developer like you to do?
+
+Thanks to `Flask` and `Flask-Classy` you have some options. There are two
+easy ways you can choose from to tell `Flask-Classy` which subdomains your
+``FlaskView`` should respond to.
+
+Let's see both methods so you can choose which one works best for your
+application.
+
+The Define-During-Registration Method
+*************************************
+
+Probably the most flexible method, you can define which subdomains you
+want to support at the same time you're registering your views::
+
+    # views.py
+
+    from flask.ext.classy import FlaskView
+
+    class CoolApiView(FlaskView):
+
+        def index(self):
+            return "API stuff"
+
+::
+
+    # main.py
+
+    from flask import Flask
+    from views import CoolApiView
+
+    app = Flask(__name__)
+    app.config['SERVER_NAME'] = 'socool.biz'
+
+    # This one matches urls like: http://socool.biz/api/...
+    CoolApiView.register(app, route_base='/api/')
+
+    # This one matches urls like: http://api.socool.biz/...
+    CoolApiView.register(app, route_base='/', subdomain='api')
+
+    if __name__ == "__main__":
+        app.run()
+
+The Explicit-Define-In-The-FlaskView Method
+*******************************************
+
+Using this method, you can explicitly define a subdomain as an attribute of
+the ``FlaskView`` subclass::
+
+    # views.py
+
+    from flask.ext.classy import FlaskView
+
+    class CoolApiView(FlaskView):
+        subdomain = "api"
+
+        def index(self):
+            return "API Stuff"
+
+::
+
+    # main.py
+
+    from flask import Flask
+    from views import CoolApiView
+
+    app = Flask(__name__)
+    app.config['SERVER_NAME'] = 'socool.biz'
+
+    # This one matches urls like: http://socool.biz/api/...
+    CoolApiView.register(app, route_base='/api/', subdomain='')
+
+    # This one matches urls like: http://api.socool.biz/...
+    CoolApiView.register(app, route_base="/")
+
+    if __name__ == "__main__":
+        app.run()
+
+As you can see here, specifying the subdomain to the register method will
+override the explicit subdomain attribute set inside the class.
+
 
 Questions?
 ----------
