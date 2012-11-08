@@ -1,5 +1,5 @@
 import unittest
-from flask import Flask
+from flask import Flask, Response
 from flask_classy import FlaskView, route
 
 def test_decorator(fn):
@@ -63,6 +63,41 @@ class SubdomainTestView(FlaskView):
 
     def sub(self):
         return "Subdomain"
+
+class BeforeRequestView(FlaskView):
+
+    def before_request(self, name):
+        raise Exception("Before Request")
+
+    def index(self):
+        return "Index"
+
+class BeforeViewView(FlaskView):
+
+    def before_index(self):
+        raise Exception("Before View")
+
+    def index(self):
+        return "Index"
+
+class AfterViewView(FlaskView):
+
+    def after_index(self, response):
+        assert isinstance(response, Response)
+        raise Exception("After View")
+
+    def index(self):
+        return "Index"
+
+class AfterRequestView(FlaskView):
+
+    def after_request(self, name, response):
+        assert isinstance(response, Response)
+        raise Exception("After Request")
+
+    def index(self):
+        return "Index"
+
 
 class CommonTestCase(unittest.TestCase):
 
@@ -147,6 +182,46 @@ class CommonTestCase(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+class ViewWrapperTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.app = Flask(self.__class__.__name__)
+        self.app.debug = True
+        self.client = self.app.test_client()
+        BeforeRequestView.register(self.app)
+        BeforeViewView.register(self.app)
+        AfterViewView.register(self.app)
+        AfterRequestView.register(self.app)
+
+    def test_before_request(self):
+        try:
+            self.client.get("/beforerequest/")
+            self.fail("Should have thrown before here")
+        except Exception, e:
+            self.assertEqual("Before Request", e.message)
+
+    def test_before_view(self):
+        try:
+            self.client.get("/beforeview/")
+            self.fail("Should have thrown before here")
+        except Exception, e:
+            self.assertEqual("Before View", e.message)
+
+    def test_after_view(self):
+        try:
+            self.client.get("/afterview/")
+            self.fail("Should have thrown before here")
+        except Exception, e:
+            self.assertEqual("After View", e.message)
+
+    def test_after_request(self):
+        try:
+            self.client.get("/afterrequest/")
+            self.fail("Should have thrown before here")
+        except Exception, e:
+            self.assertEqual("After Request", e.message)
+
 
 if __name__ == "main":
     unittest.main()

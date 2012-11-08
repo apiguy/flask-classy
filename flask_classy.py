@@ -9,6 +9,7 @@
 """
 
 import inspect
+from flask import Response, make_response
 
 _temp_rule_cache = None
 
@@ -131,8 +132,29 @@ class FlaskView(object):
 
         def proxy(*args, **kwargs):
             i = cls()
-            m = getattr(i, name)
-            return m(*args, **kwargs)
+            if hasattr(i, "before_request"):
+                i.before_request(name)
+
+            before_view_name = "before_" + name
+            if hasattr(i, before_view_name):
+                before_view = getattr(i, before_view_name)
+                before_view()
+
+            view = getattr(i, name)
+            response = view(*args, **kwargs)
+            if not isinstance(response, Response):
+                response = make_response(response)
+
+            after_view_name = "after_" + name
+            if hasattr(i, after_view_name):
+                after_view = getattr(i, after_view_name)
+                response = after_view(response)
+
+            if hasattr(i, "after_request"):
+                response = i.after_request(name, response)
+
+            return response
+
         return proxy
 
     @classmethod
@@ -143,7 +165,9 @@ class FlaskView(object):
         all_members = inspect.getmembers(cls, predicate=inspect.ismethod)
         return [member for member in all_members
                 if not member[0] in base_members
-                and not member[0].startswith("_")]
+                and not member[0].startswith("_")
+                and not member[0].startswith("before_")
+                and not member[0].startswith("after_")]
 
     @classmethod
     def build_rule(cls, rule, method=None):
