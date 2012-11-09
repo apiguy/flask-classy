@@ -167,7 +167,7 @@ html_static_path = ['_static']
 htmlhelp_basename = 'FlaskClassydoc'
 sys.path.append(os.path.abspath('_themes'))
 html_theme_path = ['_themes']
-html_theme = 'flask_small'
+html_theme = 'flask'
 
 # -- Options for LaTeX output --------------------------------------------------
 

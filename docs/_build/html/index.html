@@ -24,7 +24,11 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Flask Classy 0.4 documentation" href="#" /> 
+    <link rel="top" title="Flask Classy 0.4 documentation" href="#" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
   </head>
   <body>
   
@@ -32,6 +36,18 @@
   <div class=indexwrapper>
   
 
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">Flask Classy 0.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -143,8 +159,9 @@ you ask?</p>
 <p>Not at all. Flask-Classy will automatically create routes for any method
 in a FlaskView that doesn&#8217;t begin with an underscore character.
 You can still define your own routes of course, and we&#8217;ll look at that next.</p>
+</div>
 <div class="section" id="using-custom-routes">
-<h3>Using custom routes<a class="headerlink" href="#using-custom-routes" title="Permalink to this headline">¶</a></h3>
+<h2>Using custom routes<a class="headerlink" href="#using-custom-routes" title="Permalink to this headline">¶</a></h2>
 <p>So let&#8217;s pretend that <cite>/quotes/random/</cite> is just too unsightly and we must
 fix it to be something more spectacular forthwith. In a moment of blind
 inspiration we decide that getting a random quote is on par with receiving
@@ -182,7 +199,6 @@ have probably deduced that it was derived from the name of your FlaskView
 instance (minus the &#8220;View&#8221; suffix, of course.) &#8220;That&#8217;s all well and good,&#8221;
 you&#8217;re saying, &#8220;but how do I change that? What if I want my views at the
 root?&#8221; Well, person, I have an answer for you.</p>
-</div>
 <div class="section" id="customizing-the-route-base">
 <h3>Customizing the Route Base<a class="headerlink" href="#customizing-the-route-base" title="Permalink to this headline">¶</a></h3>
 <p>There are 2 ways to customize the base route of a <cite>FlaskView</cite>. (Well
@@ -221,8 +237,9 @@ instance:</p>
 one, and override it with method two if needed. Sweet!</p>
 </div>
 </div>
+</div>
 <div class="section" id="special-method-names">
-<h3>Special method names<a class="headerlink" href="#special-method-names" title="Permalink to this headline">¶</a></h3>
+<h2>Special method names<a class="headerlink" href="#special-method-names" title="Permalink to this headline">¶</a></h2>
 <p>So I guess I have to break the narrative a bit here so I can take some
 time to talk about <cite>Flask-Classy</cite>&#8216;s special method names.</p>
 <p>Here&#8217;s the thing. <cite>FlaskView</cite> is smart. No, not solving differential
@@ -368,7 +385,7 @@ automatically generated route is:</p>
 </dl>
 </div>
 <div class="section" id="your-own-methods-they-re-special-too">
-<h3>Your own methods (they&#8217;re special too!)<a class="headerlink" href="#your-own-methods-they-re-special-too" title="Permalink to this headline">¶</a></h3>
+<h2>Your own methods (they&#8217;re special too!)<a class="headerlink" href="#your-own-methods-they-re-special-too" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s talk about how you can add your own methods (like we did with
 <cite>random</cite> back in the day, remember? Good times.) If you add your own
 methods <cite>FlaskView</cite> will detect them during registration and register
@@ -433,8 +450,160 @@ too. If you were to define another view like this:</p>
 parameters, so if you want or need them you&#8217;ll need to define the
 route yourself using the <cite>&#64;route</cite> decorator.</p>
 </div>
+<div class="section" id="wrapping-views">
+<h2>Wrapping Views<a class="headerlink" href="#wrapping-views" title="Permalink to this headline">¶</a></h2>
+<p>Hey, remember that time when you made that big &#8216;ol <cite>Flask</cite> app and then
+had those <tt class="docutils literal"><span class="pre">&#64;app.before_reqeust</span></tt> and <tt class="docutils literal"><span class="pre">&#64;app.after_request</span></tt>
+decorated methods? Remember how you only wanted some of them to run for
+certain views so you had all those <tt class="docutils literal"><span class="pre">if</span> <span class="pre">view</span> <span class="pre">==</span> <span class="pre">the_one_I_care_about:</span></tt>
+statements and stuff?</p>
+<p><strong>Yuck.</strong></p>
+<p>I&#8217;ve been there too, and I think you might like how <cite>Flask-Classy</cite>
+addresses this very touchy issue. <tt class="docutils literal"><span class="pre">FlaskView</span></tt> will look for wrapper
+methods when your request is being processed so that you can create more
+fine grained &#8220;before and after&#8221; processing methods.</p>
+<div class="section" id="wrap-all-the-views-in-a-flaskview">
+<h3>Wrap all the views in a FlaskView<a class="headerlink" href="#wrap-all-the-views-in-a-flaskview" title="Permalink to this headline">¶</a></h3>
+<p>So there you are, eating a delicious Strawberry Frosted Pop Tart one
+morning, thinking about the awesome <cite>Flask-Classy</cite> app you deployed the
+night before during one of your late night hackathons and it hits you:</p>
+<p><em>&#8220;Tracking! I need to track those widgets!&#8221;</em></p>
+<p>No doubt it&#8217;s an inspired thought, but in this case it was a tragic
+oversight. You realize now how lucky it was that you chose to use
+<cite>Flask-Classy</cite> because adding tracking is going to be a snap:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.classy</span> <span class="kn">import</span> <span class="n">FlaskView</span>
+<span class="kn">from</span> <span class="nn">made_up_tracking</span> <span class="kn">import</span> <span class="n">track_it</span>
+
+<span class="k">class</span> <span class="nc">WidgetsView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">before_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">track_it</span><span class="p">(</span><span class="s">&quot;something is happening to a widget&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">after_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="n">track_it</span><span class="p">(</span><span class="s">&quot;something happened to a widget&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>Whew. Crisis averted, am I right? So you go about your day and at lunch time
+you hit your favorite Bacon Sandwich place and start daydreaming about your
+life as a rockstar <cite>Flask-Classy</cite> consultant when suddenly:</p>
+<p><em>&#8220;I really only care about when widgets are created and retrieved!&#8221;</em></p>
+</div>
+<div class="section" id="wrap-only-specific-views">
+<h3>Wrap only specific views<a class="headerlink" href="#wrap-only-specific-views" title="Permalink to this headline">¶</a></h3>
+<p>Yep, you&#8217;ve got a granularity problem. Not to worry though because
+<cite>Flask-Classy</cite> is happy to let you know that it has <em>smart</em> wrapper methods
+too. Let&#8217;s say for example you wanted to run something before the <tt class="docutils literal"><span class="pre">index</span></tt> view
+runs? Just create a method called <tt class="docutils literal"><span class="pre">before_index</span></tt> and <cite>Flask-Classy</cite> will make
+sure it gets run only before that view. (as you have guessed by now,
+<tt class="docutils literal"><span class="pre">after_index</span></tt> will be run only after the index view).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.classy</span> <span class="kn">import</span> <span class="n">FlaskView</span>
+<span class="kn">from</span> <span class="nn">made_up_tracking</span> <span class="kn">import</span> <span class="n">track_it</span>
+
+<span class="k">class</span> <span class="nc">WidgetsView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+
+    <span class="c"># Will be run before the &#39;get&#39; view</span>
+    <span class="k">def</span> <span class="nf">before_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">track_it</span><span class="p">(</span><span class="s">&quot;a widget is being accessed&quot;</span><span class="p">)</span>
+
+    <span class="c"># Will be run before the &#39;post&#39; view</span>
+    <span class="k">def</span> <span class="nf">after_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="n">track_it</span><span class="p">(</span><span class="s">&quot;a widget was created&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-view-wrappin-method-list">
+<h3>The View Wrappin&#8217; Method List<a class="headerlink" href="#the-view-wrappin-method-list" title="Permalink to this headline">¶</a></h3>
+<p>Just to be certain, let&#8217;s go ahead and review the methods you can write to
+wrap your views:</p>
+<dl class="docutils">
+<dt><strong>before_request(self, name, *args, *kwargs)</strong></dt>
+<dd><p class="first">Will be called before any view in this <tt class="docutils literal"><span class="pre">FlaskView</span></tt> is called.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body">The name of the view that&#8217;s about to be called.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">*args:</th><td class="field-body">Any arguments that will be passed to the view.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">**kwargs:</th><td class="field-body">Any keyword arguments that will be passed to the view.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>before_&lt;view_method&gt;(self, *args, **kwargs)</strong></dt>
+<dd><p class="first">Will be called before the view specified &lt;view_method&gt; is called.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">*args:</th><td class="field-body">Any arguments that will be passed to the view.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">**kwargs:</th><td class="field-body">Any keyword arguments that will be passed to the view.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>after_request(self, name, response)</strong></dt>
+<dd><p class="first">Will be called after any view in this <tt class="docutils literal"><span class="pre">FlaskView</span></tt> is called. You must
+return either the passed in response or a new response.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body">The name of the view that was called.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">resposne:</th><td class="field-body">The response produced after calling the view.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>after_&lt;view_method&gt;(self, response)</strong></dt>
+<dd><p class="first">Will be called after the &lt;view_method&gt; is called. You must return either
+the passed in response or a new response.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">resposne:</th><td class="field-body">The response produced after calling the view.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<div class="section" id="order-of-wrapped-method-execution">
+<h3>Order of Wrapped Method Execution<a class="headerlink" href="#order-of-wrapped-method-execution" title="Permalink to this headline">¶</a></h3>
+<p>Wrapper methods are called in the same order every time. &#8220;How predictable.&#8221;
+you&#8217;re thinking. (You&#8217;re starting to sound like my ex, sheesh.) I prefer the
+term <em>reliable</em>.</p>
+<ol class="arabic simple">
+<li>Any method registered with <tt class="docutils literal"><span class="pre">&#64;app.before_request</span></tt></li>
+<li>FlaskView&#8217;s <tt class="docutils literal"><span class="pre">before_request</span></tt> method</li>
+<li>FlaskView&#8217;s <tt class="docutils literal"><span class="pre">before_&lt;view_method&gt;</span></tt> method</li>
+<li>The actual view method</li>
+<li>FlaskView&#8217;s <tt class="docutils literal"><span class="pre">after_&lt;view_method&gt;</span></tt> method</li>
+<li>FlaskView&#8217;s <tt class="docutils literal"><span class="pre">after_request</span></tt> method</li>
+<li>Any method registered with <tt class="docutils literal"><span class="pre">&#64;app.after_request</span></tt></li>
+</ol>
+</div>
+</div>
 <div class="section" id="subdomains-getting-advanced-n-stuff">
-<h3>Subdomains (getting advanced &#8216;n stuff)<a class="headerlink" href="#subdomains-getting-advanced-n-stuff" title="Permalink to this headline">¶</a></h3>
+<h2>Subdomains (getting advanced &#8216;n stuff)<a class="headerlink" href="#subdomains-getting-advanced-n-stuff" title="Permalink to this headline">¶</a></h2>
 <p>By now, you&#8217;ve built a few hundred <cite>Flask</cite> apps using <cite>Flask-Classy</cite>
 and you probably think you&#8217;re an expert. But not until you&#8217;ve tried
 the snazzy <cite>Subdomains</cite> feature my friend.</p>
@@ -454,7 +623,7 @@ easy ways you can choose from to tell <cite>Flask-Classy</cite> which subdomains
 <p>Let&#8217;s see both methods so you can choose which one works best for your
 application.</p>
 <div class="section" id="the-define-during-registration-method">
-<h4>The Define-During-Registration Method<a class="headerlink" href="#the-define-during-registration-method" title="Permalink to this headline">¶</a></h4>
+<h3>The Define-During-Registration Method<a class="headerlink" href="#the-define-during-registration-method" title="Permalink to this headline">¶</a></h3>
 <p>Probably the most flexible method, you can define which subdomains you
 want to support at the same time you&#8217;re registering your views:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># views.py</span>
@@ -487,7 +656,7 @@ want to support at the same time you&#8217;re registering your views:</p>
 </div>
 </div>
 <div class="section" id="the-explicit-define-in-the-flaskview-method">
-<h4>The Explicit-Define-In-The-FlaskView Method<a class="headerlink" href="#the-explicit-define-in-the-flaskview-method" title="Permalink to this headline">¶</a></h4>
+<h3>The Explicit-Define-In-The-FlaskView Method<a class="headerlink" href="#the-explicit-define-in-the-flaskview-method" title="Permalink to this headline">¶</a></h3>
 <p>Using this method, you can explicitly define a subdomain as an attribute of
 the <tt class="docutils literal"><span class="pre">FlaskView</span></tt> subclass:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># views.py</span>
@@ -521,7 +690,6 @@ the <tt class="docutils literal"><span class="pre">FlaskView</span></tt> subclas
 </div>
 <p>As you can see here, specifying the subdomain to the register method will
 override the explicit subdomain attribute set inside the class.</p>
-</div>
 </div>
 </div>
 <div class="section" id="questions">
@@ -604,7 +772,7 @@ method.</p>
 
 <dl class="classmethod">
 <dt id="flask.ext.classy.FlaskView.register">
-<em class="property">classmethod </em><tt class="descname">register</tt><big>(</big><em>app</em>, <em>route_base=None</em><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.register" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descname">register</tt><big>(</big><em>app</em>, <em>route_base=None</em>, <em>subdomain=None</em><big>)</big><a class="headerlink" href="#flask.ext.classy.FlaskView.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a FlaskView class for use with a specific instance of a
 Flask app. Any methods not prefixes with an underscore are candidates
 to be routed and will have routes registered when this method is
@@ -615,8 +783,11 @@ called.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>app</strong> &#8211; an instance of a Flask application</li>
-<li><strong>route_base</strong> &#8211; the base path to use for all routes registered for
-this class</li>
+<li><strong>route_base</strong> &#8211; The base path to use for all routes registered for
+this class. Overrides the route_base attribute if
+it has been set.</li>
+<li><strong>subdomain</strong> &#8211; A subdomain that this registration should use when
+configuring routes.</li>
 </ul>
 </td>
 </tr>
@@ -643,16 +814,73 @@ FlaskView subclasses. The format is exactly the same as Flask&#8217;s
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Flask-Classy</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#let-s-see-how-it-works">Let&#8217;s see how it works</a></li>
+<li><a class="reference internal" href="#using-custom-routes">Using custom routes</a><ul>
+<li><a class="reference internal" href="#customizing-the-route-base">Customizing the Route Base</a><ul>
+<li><a class="reference internal" href="#method-1">Method 1:</a></li>
+<li><a class="reference internal" href="#method-2">Method 2:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#special-method-names">Special method names</a></li>
+<li><a class="reference internal" href="#your-own-methods-they-re-special-too">Your own methods (they&#8217;re special too!)</a></li>
+<li><a class="reference internal" href="#wrapping-views">Wrapping Views</a><ul>
+<li><a class="reference internal" href="#wrap-all-the-views-in-a-flaskview">Wrap all the views in a FlaskView</a></li>
+<li><a class="reference internal" href="#wrap-only-specific-views">Wrap only specific views</a></li>
+<li><a class="reference internal" href="#the-view-wrappin-method-list">The View Wrappin&#8217; Method List</a></li>
+<li><a class="reference internal" href="#order-of-wrapped-method-execution">Order of Wrapped Method Execution</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#subdomains-getting-advanced-n-stuff">Subdomains (getting advanced &#8216;n stuff)</a><ul>
+<li><a class="reference internal" href="#the-define-during-registration-method">The Define-During-Registration Method</a></li>
+<li><a class="reference internal" href="#the-explicit-define-in-the-flaskview-method">The Explicit-Define-In-The-FlaskView Method</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#questions">Questions?</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
-  
-    <a href="http://github.com/apiguy/flask-classy"><img style="position: fixed; top: 0; right: 0; border: 0;"
-    src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-  
-
+  <div class="footer">
+    &copy; Copyright 2012, Freedom Dumlao.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
   
   </div>
   
-
   </body>
 </html>

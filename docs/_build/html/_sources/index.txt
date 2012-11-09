@@ -129,7 +129,7 @@ in a FlaskView that doesn't begin with an underscore character.
 You can still define your own routes of course, and we'll look at that next.
 
 Using custom routes
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 So let's pretend that `/quotes/random/` is just too unsightly and we must
 fix it to be something more spectacular forthwith. In a moment of blind
@@ -214,7 +214,7 @@ The second method will always override the first, so you can use method
 one, and override it with method two if needed. Sweet!
 
 Special method names
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 So I guess I have to break the narrative a bit here so I can take some
 time to talk about `Flask-Classy`'s special method names.
@@ -295,7 +295,7 @@ method names:
 
 
 Your own methods (they're special too!)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
 
 Let's talk about how you can add your own methods (like we did with
 `random` back in the day, remember? Good times.) If you add your own
@@ -341,8 +341,152 @@ One important thing to note, is that `FlaskView` does not type your
 parameters, so if you want or need them you'll need to define the
 route yourself using the `@route` decorator.
 
+Wrapping Views
+--------------
+
+Hey, remember that time when you made that big 'ol `Flask` app and then
+had those ``@app.before_reqeust`` and ``@app.after_request``
+decorated methods? Remember how you only wanted some of them to run for
+certain views so you had all those ``if view == the_one_I_care_about:``
+statements and stuff?
+
+**Yuck.**
+
+I've been there too, and I think you might like how `Flask-Classy`
+addresses this very touchy issue. ``FlaskView`` will look for wrapper
+methods when your request is being processed so that you can create more
+fine grained "before and after" processing methods.
+
+Wrap all the views in a FlaskView
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+So there you are, eating a delicious Strawberry Frosted Pop Tart one
+morning, thinking about the awesome `Flask-Classy` app you deployed the
+night before during one of your late night hackathons and it hits you:
+
+*"Tracking! I need to track those widgets!"*
+
+No doubt it's an inspired thought, but in this case it was a tragic
+oversight. You realize now how lucky it was that you chose to use
+`Flask-Classy` because adding tracking is going to be a snap::
+
+    from flask.ext.classy import FlaskView
+    from made_up_tracking import track_it
+
+    class WidgetsView(FlaskView):
+
+        def before_request(self, name):
+            track_it("something is happening to a widget")
+
+        def after_request(self, name, response):
+            track_it("something happened to a widget")
+            return response
+
+        def post(self):
+            ...
+
+        def get(self, id):
+            ...
+
+Whew. Crisis averted, am I right? So you go about your day and at lunch time
+you hit your favorite Bacon Sandwich place and start daydreaming about your
+life as a rockstar `Flask-Classy` consultant when suddenly:
+
+*"I really only care about when widgets are created and retrieved!"*
+
+Wrap only specific views
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Yep, you've got a granularity problem. Not to worry though because
+`Flask-Classy` is happy to let you know that it has *smart* wrapper methods
+too. Let's say for example you wanted to run something before the ``index`` view
+runs? Just create a method called ``before_index`` and `Flask-Classy` will make
+sure it gets run only before that view. (as you have guessed by now,
+``after_index`` will be run only after the index view).
+
+::
+
+    from flask.ext.classy import FlaskView
+    from made_up_tracking import track_it
+
+    class WidgetsView(FlaskView):
+
+        # Will be run before the 'get' view
+        def before_get(self):
+            track_it("a widget is being accessed")
+
+        # Will be run before the 'post' view
+        def after_post(self, response):
+            track_it("a widget was created")
+            return response
+
+        def post(self):
+            ...
+
+        def get(self, id):
+            ...
+
+The View Wrappin' Method List
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Just to be certain, let's go ahead and review the methods you can write to
+wrap your views:
+
+**before_request(self, name, *args, *kwargs)**
+    Will be called before any view in this ``FlaskView`` is called.
+
+    :name:       The name of the view that's about to be called.
+
+
+    :\*args:     Any arguments that will be passed to the view.
+
+
+    :\*\*kwargs: Any keyword arguments that will be passed to the view.
+
+
+**before_<view_method>(self, *args, **kwargs)**
+    Will be called before the view specified <view_method> is called.
+
+    :\*args:     Any arguments that will be passed to the view.
+
+
+    :\*\*kwargs: Any keyword arguments that will be passed to the view.
+
+
+**after_request(self, name, response)**
+    Will be called after any view in this ``FlaskView`` is called. You must
+    return either the passed in response or a new response.
+
+    :name:       The name of the view that was called.
+
+
+    :resposne:   The response produced after calling the view.
+
+
+**after_<view_method>(self, response)**
+    Will be called after the <view_method> is called. You must return either
+    the passed in response or a new response.
+
+    :resposne:   The response produced after calling the view.
+
+
+Order of Wrapped Method Execution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Wrapper methods are called in the same order every time. "How predictable."
+you're thinking. (You're starting to sound like my ex, sheesh.) I prefer the
+term *reliable*.
+
+1. Any method registered with ``@app.before_request``
+2. FlaskView's ``before_request`` method
+3. FlaskView's ``before_<view_method>`` method
+4. The actual view method
+5. FlaskView's ``after_<view_method>`` method
+6. FlaskView's ``after_request`` method
+7. Any method registered with ``@app.after_request``
+
 Subdomains (getting advanced 'n stuff)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------
 
 By now, you've built a few hundred `Flask` apps using `Flask-Classy`
 and you probably think you're an expert. But not until you've tried
@@ -368,7 +512,7 @@ Let's see both methods so you can choose which one works best for your
 application.
 
 The Define-During-Registration Method
-*************************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Probably the most flexible method, you can define which subdomains you
 want to support at the same time you're registering your views::
@@ -402,7 +546,7 @@ want to support at the same time you're registering your views::
         app.run()
 
 The Explicit-Define-In-The-FlaskView Method
-*******************************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Using this method, you can explicitly define a subdomain as an attribute of
 the ``FlaskView`` subclass::

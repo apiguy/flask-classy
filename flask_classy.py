@@ -133,12 +133,12 @@ class FlaskView(object):
         def proxy(*args, **kwargs):
             i = cls()
             if hasattr(i, "before_request"):
-                i.before_request(name)
+                i.before_request(name, *args, **kwargs)
 
             before_view_name = "before_" + name
             if hasattr(i, before_view_name):
                 before_view = getattr(i, before_view_name)
-                before_view()
+                before_view(*args, **kwargs)
 
             view = getattr(i, name)
             response = view(*args, **kwargs)
