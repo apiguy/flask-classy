@@ -73,8 +73,11 @@ class FlaskView(object):
 
             cls.route_base = route_base
 
-        if not subdomain and hasattr(cls, "subdomain"):
-            subdomain = cls.subdomain
+        if not subdomain:
+            if hasattr(app, "subdomain") and app.subdomain != None:
+                subdomain = app.subdomain
+            elif hasattr(cls, "subdomain"):
+                subdomain = cls.subdomain
 
         members = cls.find_member_methods()
         special_methods = ["get", "put", "patch", "post", "delete", "index"]
@@ -113,9 +116,11 @@ class FlaskView(object):
             cls.route_base = cls.orig_route_base
             del cls.orig_route_base
 
+
+
     @classmethod
     def configure_subdomain(cls, options, subdomain):
-        if not subdomain: return options
+        if "subdomain" in options: return options
 
         options["subdomain"] = subdomain
         return options
