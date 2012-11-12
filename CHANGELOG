@@ -3,3 +3,19 @@
     Version 0.3.4
 
     * Added PATCH support
+
+2012-11-05  Freedom Dumlao <freedomdumlao@gmail.com>
+
+    Version 0.4
+
+    * Added support for subdomains
+
+2012-11-11  Freedom Dumlao <freedomdumlao@gmail.com>
+
+    Version 0.4.3
+
+    - Features
+        * Added wrapper methods for views
+
+    - Bugfixes
+        * Fixed a bug that caused blueprint subdomains to be ignored

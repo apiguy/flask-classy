@@ -8,6 +8,8 @@
     :license: BSD, see LICENSE for more details.
 """
 
+__version__ = "0.4.3"
+
 import inspect
 from flask import Response, make_response
 
