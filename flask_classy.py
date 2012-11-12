@@ -94,7 +94,10 @@ class FlaskView(object):
                     rule, options = cached_rule
                     rule = cls.build_rule(rule)
                     options = cls.configure_subdomain(options, subdomain)
-                    app.add_url_rule(rule, "%s_%d" % (route_name, idx,), proxy, **options)
+                    if len(cls._rule_cache[name]) == 1:
+                        app.add_url_rule(rule, "%s" % route_name, proxy, **options)
+                    else:
+                        app.add_url_rule(rule, "%s_%d" % (route_name, idx,), proxy, **options)
 
             elif name in special_methods:
                 if name in ["get", "index"]:
