@@ -12,6 +12,7 @@ __version__ = "0.4.3"
 
 import inspect
 from flask import Response, make_response
+import re
 
 _temp_rule_cache = None
 
@@ -106,7 +107,7 @@ class FlaskView(object):
                     methods = [name.upper()]
 
                 if name in id_methods:
-                    rule = "/<id>/"
+                    rule = "/<id>"
                 else:
                     rule = "/"
                 rule = cls.build_rule(rule)
@@ -192,14 +193,8 @@ class FlaskView(object):
                        method here. arguments named "self" will be ignored
         """
 
-        rule_parts = []
         route_base = cls.get_route_base()
-        if route_base:
-            rule_parts.append(route_base)
-
-        rule = rule.strip("/")
-        if rule:
-            rule_parts.append(rule)
+        rule_parts = [route_base, rule]
 
         if method:
             args = inspect.getargspec(method)[0]
@@ -207,7 +202,8 @@ class FlaskView(object):
                 if arg != "self":
                     rule_parts.append("<%s>" % arg)
 
-        return "/%s/" % "/".join(rule_parts)
+        result = "/%s" % "/".join(rule_parts)
+        return re.sub(r'(/)\1+', r'\1', result)
 
     @classmethod
     def get_route_base(cls):

@@ -23,6 +23,9 @@ class BasicView(FlaskView):
     def custom_method(self):
         return "Custom Method"
 
+    def custom_method_with_params(self, p_one, p_two):
+        return "Custom Method %s %s" % (p_one, p_two,)
+
     @route("/routed/")
     def routed_method(self):
         return "Routed Method"
@@ -31,6 +34,10 @@ class BasicView(FlaskView):
     @route("/route2/")
     def multi_routed_method(self):
         return "Multi Routed Method"
+
+    @route("/noslash")
+    def no_slash_method(self):
+        return "No Slash Method"
 
 class SubdomainAttributeView(FlaskView):
     subdomain = "sub1"
@@ -44,6 +51,11 @@ class SubdomainRouteView(FlaskView):
     def index(self):
         return "Index"
 
+class IndexView(FlaskView):
+    route_base = "/"
+
+    def index(self):
+        return "Index"
 
 class BeforeRequestView(FlaskView):
 
