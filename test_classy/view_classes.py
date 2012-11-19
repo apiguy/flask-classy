@@ -39,6 +39,10 @@ class BasicView(FlaskView):
     def no_slash_method(self):
         return "No Slash Method"
 
+    @route("/endpoint/", endpoint="basic_endpoint")
+    def custom_endpoint(self):
+        return "Custom Endpoint"
+
 class SubdomainAttributeView(FlaskView):
     subdomain = "sub1"
 

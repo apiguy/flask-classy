@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, url_for
 from view_classes import BasicView, IndexView
 from nose.tools import *
 
@@ -58,6 +58,7 @@ def test_no_slash():
 def test_index_view_index():
     resp = client.get("/")
     eq_("Index", resp.data)
+
 
 
 

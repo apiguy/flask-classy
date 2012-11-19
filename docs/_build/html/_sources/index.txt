@@ -213,6 +213,75 @@ instance::
 The second method will always override the first, so you can use method
 one, and override it with method two if needed. Sweet!
 
+Using multiple routes for a single view
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+What happens when you need to apply more than one route to a specific view
+(for what it's worth, Flask core deveoper Armin Ronacher `says doing that is
+a bad idea <http://stackoverflow.com/a/7876088/105987>`_). But since you're so
+determined let's see how to do that anyway.
+
+So let's say you add the following routes to one of your views::
+
+    class QuotesView(FlaskView):
+        route_base = '/'
+
+        @route('/quote/<id>')
+        @route('/quote/show/<id>')
+        def show_quote(self, id):
+            ...
+
+That would end up generating the following 2 routes:
+
+============ ================================
+**rule**     /quote/<id>
+**endpoint** QuotesView:show_quote_1
+**method**   GET
+============ ================================
+
+============ ================================
+**rule**     /quote/show/<id>
+**endpoint** QuotesView:show_quote_0
+**method**   GET
+============ ================================
+
+"Oh weird! What's with all the _0 and _1 stuff?" you ask in disgust. Well
+first I want to know how you managed to pronounce _0. But really the reason
+is that since there is more than one route, an index is added to prevent an
+endpoint collision. This differs from the default behavior of `Flask`, which
+allows you to create collisions.
+
+Specify your own damn endpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+So you don't like the nifty indexing trick? Well fine then. I guess you can
+go ahead and specify your own endpoint if you like but that's only because I
+like you.
+
+::
+
+    class QuotesView(FlaskView):
+        route_base = '/'
+
+        @route('/quote/<id>', endpoint='show_quote')
+        @route('/quote/show/<id>')
+        def show_quote(self, id):
+            ...
+
+Will generate the following routes:
+
+============ ================================
+**rule**     /quote/<id>
+**endpoint** show_quote
+**method**   GET
+============ ================================
+
+============ ================================
+**rule**     /quote/show/<id>
+**endpoint** QuotesView:show_quote_0
+**method**   GET
+============ ================================
+
 Special method names
 --------------------
 
@@ -232,43 +301,43 @@ method names:
     beginning? Oh nevermind. So *index* is generally used for home pages
     and lists of resources. The automatically generated route is:
 
-    ========== ================================
-    **rule**   /
-    **name**   <class name>:index
-    **method** GET
-    ========== ================================
+    ============ ================================
+    **rule**     /
+    **endpoint** <class name>:index
+    **method**   GET
+    ============ ================================
 
 **get**
     Another old familiar friend, `get` is usually used to retrieve a
     specific resource. The automatically generated route is:
 
-    ========== ================================
-    **rule**   /<id>/
-    **name**   <class name>:get
-    **method** GET
-    ========== ================================
+    ============ ================================
+    **rule**     /<id>
+    **endpoint** <class name>:get
+    **method**   GET
+    ============ ================================
 
 **post**
     This method is generally used for creating new instances of a resource
     but can really be used to handle any posted data you want. The
     automatically generated route is:
 
-    ========== ================================
-    **rule**   /
-    **name**   <class name>:post
-    **method** POST
-    ========== ================================
+    ============ ================================
+    **rule**     /
+    **endpoint** <class name>:post
+    **method**   POST
+    ============ ================================
 
 **put**
     For those of us using REST this one is really helpful. It's generally
     used to update a specific resource. The automatically generated route
     is:
 
-    ========== ================================
-    **rule**   /<id>/
-    **name**   <class name>:put
-    **method** PUT
-    ========== ================================
+    ============ ================================
+    **rule**     /<id>
+    **endpoint** <class name>:put
+    **method**   PUT
+    ============ ================================
 
 **patch**
     Similar to `put`, `patch` is used for updating a resource. Unlike `put`
@@ -276,22 +345,22 @@ method names:
     instead of doing a complete replacement of the resource. The automatically
     generated route is:
 
-    ========== ================================
-    **rule**   /<id>/
-    **name**   <class name>:patch
-    **method** PATCH
-    ========== ================================
+    ============ ================================
+    **rule**     /<id>
+    **endpoint** <class name>:patch
+    **method**   PATCH
+    ============ ================================
 
 **delete**
     More RESTfulness. It's the most self explanitory of all the RESTful
     methods, and it's commonly used to destroy a specific resource. The
     automatically generated route is:
 
-    ========== ================================
-    **rule**   /<id>/
-    **name**   <class name>:delete
-    **method** DELETE
-    ========== ================================
+    ============ ================================
+    **rule**     /<id>
+    **endpoint** <class name>:delete
+    **method**   DELETE
+    ============ ================================
 
 
 Your own methods (they're special too!)
@@ -313,11 +382,11 @@ view method in your `FlaskView` like this::
 
 `FlaskView` will generate a route like this:
 
-========== ================================
-**rule**      '/some/my_view/'
-**name**      SomeView:my_view_0
+============ ================================
+**rule**      /some/my_view/
+**endpoint**  SomeView:my_view
 **method**    GET
-========== ================================
+============ ================================
 
 "That's fine." you say. "But what if I have a view method with some
 parameters?" Well `FlaskView` will try to take care of that for you
@@ -331,15 +400,17 @@ too. If you were to define another view like this::
 
 `FlaskView` would generate a route like this:
 
-========== ================================
-**rule**   /home/this_view/<arg1>/<arg2>/
-**name**   AnotherView:this_view_0
-**method** GET
-========== ================================
+============ ================================
+**rule**     /home/this_view/<arg1>/<arg2>
+**endpoint** AnotherView:this_view
+**method**   GET
+============ ================================
 
-One important thing to note, is that `FlaskView` does not type your
-parameters, so if you want or need them you'll need to define the
-route yourself using the `@route` decorator.
+.. note::
+    One important thing to note, is that `FlaskView` does not type your
+    parameters, so if you want or need them you'll need to define the
+    route yourself using the `@route` decorator.
+
 
 Wrapping Views
 --------------

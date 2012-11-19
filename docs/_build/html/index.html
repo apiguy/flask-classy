@@ -237,6 +237,113 @@ instance:</p>
 one, and override it with method two if needed. Sweet!</p>
 </div>
 </div>
+<div class="section" id="using-multiple-routes-for-a-single-view">
+<h3>Using multiple routes for a single view<a class="headerlink" href="#using-multiple-routes-for-a-single-view" title="Permalink to this headline">¶</a></h3>
+<p>What happens when you need to apply more than one route to a specific view
+(for what it&#8217;s worth, Flask core deveoper Armin Ronacher <a class="reference external" href="http://stackoverflow.com/a/7876088/105987">says doing that is
+a bad idea</a>). But since you&#8217;re so
+determined let&#8217;s see how to do that anyway.</p>
+<p>So let&#8217;s say you add the following routes to one of your views:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">QuotesView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&#39;/&#39;</span>
+
+    <span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/quote/&lt;id&gt;&#39;</span><span class="p">)</span>
+    <span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/quote/show/&lt;id&gt;&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">show_quote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>That would end up generating the following 2 routes:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="73%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/quote/&lt;id&gt;</td>
+</tr>
+<tr class="row-even"><td><strong>endpoint</strong></td>
+<td>QuotesView:show_quote_1</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>GET</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="73%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/quote/show/&lt;id&gt;</td>
+</tr>
+<tr class="row-even"><td><strong>endpoint</strong></td>
+<td>QuotesView:show_quote_0</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>GET</td>
+</tr>
+</tbody>
+</table>
+<p>&#8220;Oh weird! What&#8217;s with all the _0 and _1 stuff?&#8221; you ask in disgust. Well
+first I want to know how you managed to pronounce _0. But really the reason
+is that since there is more than one route, an index is added to prevent an
+endpoint collision. This differs from the default behavior of <cite>Flask</cite>, which
+allows you to create collisions.</p>
+</div>
+<div class="section" id="specify-your-own-damn-endpoint">
+<h3>Specify your own damn endpoint<a class="headerlink" href="#specify-your-own-damn-endpoint" title="Permalink to this headline">¶</a></h3>
+<p>So you don&#8217;t like the nifty indexing trick? Well fine then. I guess you can
+go ahead and specify your own endpoint if you like but that&#8217;s only because I
+like you.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">QuotesView</span><span class="p">(</span><span class="n">FlaskView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&#39;/&#39;</span>
+
+    <span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/quote/&lt;id&gt;&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s">&#39;show_quote&#39;</span><span class="p">)</span>
+    <span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/quote/show/&lt;id&gt;&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">show_quote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>Will generate the following routes:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="73%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/quote/&lt;id&gt;</td>
+</tr>
+<tr class="row-even"><td><strong>endpoint</strong></td>
+<td>show_quote</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>GET</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="73%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>rule</strong></td>
+<td>/quote/show/&lt;id&gt;</td>
+</tr>
+<tr class="row-even"><td><strong>endpoint</strong></td>
+<td>QuotesView:show_quote_0</td>
+</tr>
+<tr class="row-odd"><td><strong>method</strong></td>
+<td>GET</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section" id="special-method-names">
 <h2>Special method names<a class="headerlink" href="#special-method-names" title="Permalink to this headline">¶</a></h2>
@@ -256,14 +363,14 @@ beginning? Oh nevermind. So <em>index</em> is generally used for home pages
 and lists of resources. The automatically generated route is:</p>
 <table border="1" class="last docutils">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col width="27%" />
+<col width="73%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>rule</strong></td>
 <td>/</td>
 </tr>
-<tr class="row-even"><td><strong>name</strong></td>
+<tr class="row-even"><td><strong>endpoint</strong></td>
 <td>&lt;class name&gt;:index</td>
 </tr>
 <tr class="row-odd"><td><strong>method</strong></td>
@@ -277,14 +384,14 @@ and lists of resources. The automatically generated route is:</p>
 specific resource. The automatically generated route is:</p>
 <table border="1" class="last docutils">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col width="27%" />
+<col width="73%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>rule</strong></td>
-<td>/&lt;id&gt;/</td>
+<td>/&lt;id&gt;</td>
 </tr>
-<tr class="row-even"><td><strong>name</strong></td>
+<tr class="row-even"><td><strong>endpoint</strong></td>
 <td>&lt;class name&gt;:get</td>
 </tr>
 <tr class="row-odd"><td><strong>method</strong></td>
@@ -299,14 +406,14 @@ but can really be used to handle any posted data you want. The
 automatically generated route is:</p>
 <table border="1" class="last docutils">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col width="27%" />
+<col width="73%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>rule</strong></td>
 <td>/</td>
 </tr>
-<tr class="row-even"><td><strong>name</strong></td>
+<tr class="row-even"><td><strong>endpoint</strong></td>
 <td>&lt;class name&gt;:post</td>
 </tr>
 <tr class="row-odd"><td><strong>method</strong></td>
@@ -321,14 +428,14 @@ used to update a specific resource. The automatically generated route
 is:</p>
 <table border="1" class="last docutils">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col width="27%" />
+<col width="73%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>rule</strong></td>
-<td>/&lt;id&gt;/</td>
+<td>/&lt;id&gt;</td>
 </tr>
-<tr class="row-even"><td><strong>name</strong></td>
+<tr class="row-even"><td><strong>endpoint</strong></td>
 <td>&lt;class name&gt;:put</td>
 </tr>
 <tr class="row-odd"><td><strong>method</strong></td>
@@ -344,14 +451,14 @@ instead of doing a complete replacement of the resource. The automatically
 generated route is:</p>
 <table border="1" class="last docutils">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col width="27%" />
+<col width="73%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>rule</strong></td>
-<td>/&lt;id&gt;/</td>
+<td>/&lt;id&gt;</td>
 </tr>
-<tr class="row-even"><td><strong>name</strong></td>
+<tr class="row-even"><td><strong>endpoint</strong></td>
 <td>&lt;class name&gt;:patch</td>
 </tr>
 <tr class="row-odd"><td><strong>method</strong></td>
@@ -366,14 +473,14 @@ methods, and it&#8217;s commonly used to destroy a specific resource. The
 automatically generated route is:</p>
 <table border="1" class="last docutils">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col width="27%" />
+<col width="73%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>rule</strong></td>
-<td>/&lt;id&gt;/</td>
+<td>/&lt;id&gt;</td>
 </tr>
-<tr class="row-even"><td><strong>name</strong></td>
+<tr class="row-even"><td><strong>endpoint</strong></td>
 <td>&lt;class name&gt;:delete</td>
 </tr>
 <tr class="row-odd"><td><strong>method</strong></td>
@@ -403,15 +510,15 @@ view method in your <cite>FlaskView</cite> like this:</p>
 <p><cite>FlaskView</cite> will generate a route like this:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col width="27%" />
+<col width="73%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>rule</strong></td>
-<td>&#8216;/some/my_view/&#8217;</td>
+<td>/some/my_view/</td>
 </tr>
-<tr class="row-even"><td><strong>name</strong></td>
-<td>SomeView:my_view_0</td>
+<tr class="row-even"><td><strong>endpoint</strong></td>
+<td>SomeView:my_view</td>
 </tr>
 <tr class="row-odd"><td><strong>method</strong></td>
 <td>GET</td>
@@ -431,24 +538,27 @@ too. If you were to define another view like this:</p>
 <p><cite>FlaskView</cite> would generate a route like this:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="24%" />
-<col width="76%" />
+<col width="27%" />
+<col width="73%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>rule</strong></td>
-<td>/home/this_view/&lt;arg1&gt;/&lt;arg2&gt;/</td>
+<td>/home/this_view/&lt;arg1&gt;/&lt;arg2&gt;</td>
 </tr>
-<tr class="row-even"><td><strong>name</strong></td>
-<td>AnotherView:this_view_0</td>
+<tr class="row-even"><td><strong>endpoint</strong></td>
+<td>AnotherView:this_view</td>
 </tr>
 <tr class="row-odd"><td><strong>method</strong></td>
 <td>GET</td>
 </tr>
 </tbody>
 </table>
-<p>One important thing to note, is that <cite>FlaskView</cite> does not type your
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">One important thing to note, is that <cite>FlaskView</cite> does not type your
 parameters, so if you want or need them you&#8217;ll need to define the
 route yourself using the <cite>&#64;route</cite> decorator.</p>
+</div>
 </div>
 <div class="section" id="wrapping-views">
 <h2>Wrapping Views<a class="headerlink" href="#wrapping-views" title="Permalink to this headline">¶</a></h2>
@@ -827,6 +937,8 @@ FlaskView subclasses. The format is exactly the same as Flask&#8217;s
 <li><a class="reference internal" href="#method-2">Method 2:</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#using-multiple-routes-for-a-single-view">Using multiple routes for a single view</a></li>
+<li><a class="reference internal" href="#specify-your-own-damn-endpoint">Specify your own damn endpoint</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#special-method-names">Special method names</a></li>
