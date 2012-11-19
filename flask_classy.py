@@ -8,7 +8,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = "0.4.3"
+__version__ = "0.5"
 
 import inspect
 from flask import Response, make_response
@@ -112,11 +112,7 @@ class FlaskView(object):
                 else:
                     methods = [name.upper()]
 
-                if name in id_methods:
-                    rule = "/<id>"
-                else:
-                    rule = "/"
-                rule = cls.build_rule(rule)
+                rule = cls.build_rule("/", value)
 
                 app.add_url_rule(rule, route_name, proxy, methods=methods, subdomain=subdomain)
 
