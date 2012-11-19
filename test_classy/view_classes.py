@@ -5,8 +5,8 @@ class BasicView(FlaskView):
     def index(self):
         return "Index"
 
-    def get(self, id):
-        return "Get " + id
+    def get(self, obj_id):
+        return "Get " + obj_id
 
     def put(self, id):
         return "Put " + id
