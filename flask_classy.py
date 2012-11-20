@@ -8,7 +8,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = "0.5"
+__version__ = "0.5.1"
 
 import inspect
 from flask import Response, make_response

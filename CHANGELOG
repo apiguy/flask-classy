@@ -34,6 +34,7 @@
         * Changed the way endpoints are generated to accommodate the more
           common cases. Methods with a single route are no longer have
           endpoints suffixed with an index.
+          (Thanks to Jesaja Everling for the original patch.)
 
     - Features
         * Added support for specifying a custom endpoint using an endpoint
@@ -42,3 +43,13 @@
     - Bugfixes
         * Fixed a bug that would not allow you to use any parameter name
           but "id" in the special methods.
+
+2012-11-20  Freedom Dumlao <freedomdumlao@gmail.com>
+
+    Version 0.5.1
+
+    - Bugfixes
+        * Fixed a bug that caused views that used the @route decorator to
+          ignore the subdomain keyword parameter specified in the
+          FlaskView's register method.
+          (Thanks to Mark Grey for reporting.)
