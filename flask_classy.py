@@ -84,7 +84,6 @@ class FlaskView(object):
 
         members = cls.find_member_methods()
         special_methods = ["get", "put", "patch", "post", "delete", "index"]
-        id_methods = ["get", "put", "patch", "delete"]
 
         for name, value in members:
             proxy = cls.make_proxy_method(name)
@@ -94,17 +93,19 @@ class FlaskView(object):
                 for idx, cached_rule in enumerate(cls._rule_cache[name]):
                     rule, options = cached_rule
                     rule = cls.build_rule(rule)
-                    options = cls.configure_subdomain(options, subdomain)
+                    sub, ep, options = cls.parse_options(options)
 
-                    if "endpoint" in options:
-                        endpoint = options.get("endpoint")
-                        options = {k:v for k,v in options.iteritems() if k != "endpoint"}
+                    if not subdomain and sub:
+                        subdomain = sub
+
+                    if ep:
+                        endpoint = ep
                     elif len(cls._rule_cache[name]) == 1:
                         endpoint = route_name
                     else:
                         endpoint = "%s_%d" % (route_name, idx,)
 
-                    app.add_url_rule(rule, endpoint, proxy, **options)
+                    app.add_url_rule(rule, endpoint, proxy, subdomain=subdomain, **options)
 
             elif name in special_methods:
                 if name in ["get", "index"]:
@@ -127,11 +128,15 @@ class FlaskView(object):
 
 
     @classmethod
-    def configure_subdomain(cls, options, subdomain):
-        if "subdomain" in options: return options
+    def parse_options(cls, options):
+        """Extracts subdomain and endpoint values from the options dict and returns
+           them along with a new dict without those values.
+        """
+        subdomain = options.get("subdomain")
+        endpoint = options.get("endpoint")
+        options = {k:v for k,v in options.iteritems() if not k in ["subdomain", "endpoint"]}
 
-        options["subdomain"] = subdomain
-        return options
+        return subdomain, endpoint, options,
 
 
     @classmethod
