@@ -79,6 +79,7 @@ see how Flask-Classy works::
     if __name__ == '__main__':
         app.run()
 
+
 Run this app and open your web browser to: http://localhost:5000/quotes/
 
 As you can see, it returns the list of quotes. But what if we just wanted
@@ -94,8 +95,7 @@ one quote? What would we do then?
             id = int(id)
             if id < len(quotes) - 1:
                 return quotes[id]
-            else:
-                return "Not Found", 404
+            return "Not Found", 404
 
 Now direct your browser to: http://localhost:5000/quotes/1/ and you should
 see the very poignant quote from the esteemed Mr. Edison.
