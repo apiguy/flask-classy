@@ -1,24 +1,21 @@
-2012-11-1   Freedom Dumlao  <freedomdumlao@gmail.com>
+2012-11-29  Freedom Dumlao <freedomdumlao@gmail.com>
 
-    Version 0.3.4
-
-    * Added PATCH support
-
-2012-11-05  Freedom Dumlao <freedomdumlao@gmail.com>
-
-    Version 0.4
-
-    * Added support for subdomains
-
-2012-11-11  Freedom Dumlao <freedomdumlao@gmail.com>
-
-    Version 0.4.3
-
-    - Features
-        * Added wrapper methods for views
+    Version 0.5.2
 
     - Bugfixes
-        * Fixed a bug that caused blueprint subdomains to be ignored
+        * Fixed a SyntaxError that was caused by using a dictionary generator
+          in Python versions earlier than 2.7.
+          (Thanks to @maxcountryman)
+
+2012-11-20  Freedom Dumlao <freedomdumlao@gmail.com>
+
+    Version 0.5.1
+
+    - Bugfixes
+        * Fixed a bug that caused views that used the @route decorator to
+          ignore the subdomain keyword parameter specified in the
+          FlaskView's register method.
+          (Thanks to Mark Grey for reporting.)
 
 2012-11-18  Freedom Dumlao <freedomdumlao@gmail.com>
 
@@ -44,12 +41,24 @@
         * Fixed a bug that would not allow you to use any parameter name
           but "id" in the special methods.
 
-2012-11-20  Freedom Dumlao <freedomdumlao@gmail.com>
+2012-11-11  Freedom Dumlao <freedomdumlao@gmail.com>
 
-    Version 0.5.1
+    Version 0.4.3
+
+    - Features
+        * Added wrapper methods for views
 
     - Bugfixes
-        * Fixed a bug that caused views that used the @route decorator to
-          ignore the subdomain keyword parameter specified in the
-          FlaskView's register method.
-          (Thanks to Mark Grey for reporting.)
+        * Fixed a bug that caused blueprint subdomains to be ignored
+
+2012-11-05  Freedom Dumlao <freedomdumlao@gmail.com>
+
+    Version 0.4
+
+    * Added support for subdomains
+
+2012-11-1   Freedom Dumlao  <freedomdumlao@gmail.com>
+
+    Version 0.3.4
+
+    * Added PATCH support
