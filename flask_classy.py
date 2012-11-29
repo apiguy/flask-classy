@@ -12,7 +12,7 @@ __version__ = "0.5.2"
 
 import inspect
 from flask import Response, make_response
-import re, copy
+import re
 
 _temp_rule_cache = None
 
@@ -132,7 +132,7 @@ class FlaskView(object):
         """Extracts subdomain and endpoint values from the options dict and returns
            them along with a new dict without those values.
         """
-        options = copy.copy(options)
+        options = options.copy()
         subdomain = options.pop('subdomain', None)
         endpoint = options.pop('endpoint', None)
         return subdomain, endpoint, options,
