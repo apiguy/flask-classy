@@ -132,10 +132,8 @@ class FlaskView(object):
         """Extracts subdomain and endpoint values from the options dict and returns
            them along with a new dict without those values.
         """
-        subdomain = options.get("subdomain")
-        endpoint = options.get("endpoint")
-        options = {k:v for k,v in options.iteritems() if not k in ["subdomain", "endpoint"]}
-
+        subdomain = options.pop('subdomain', None)
+        endpoint = options.pop('endpoint', None)
         return subdomain, endpoint, options,
 
 
