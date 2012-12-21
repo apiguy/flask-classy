@@ -43,6 +43,10 @@ class BasicView(FlaskView):
     def custom_endpoint(self):
         return "Custom Endpoint"
 
+    @route("/route3/", methods=['POST'])
+    def custom_http_method(self):
+        return "Custom HTTP Method"
+
 class SubdomainAttributeView(FlaskView):
     subdomain = "sub1"
 

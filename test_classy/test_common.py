@@ -59,6 +59,10 @@ def test_index_view_index():
     resp = client.get("/")
     eq_("Index", resp.data)
 
+def test_custom_http_method():
+    resp = client.post("/basic/route3/")
+    eq_("Custom HTTP Method", resp.data)
+
 
 
 
