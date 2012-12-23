@@ -118,7 +118,7 @@ Let's add a random view to our FlaskView::
             return choice(quotes)
 
 And point your browser to: http://localhost:5000/quotes/random/ and see
-that a random quote is returned each time. Voila!
+that a random quote is returned each time. Voilà!
 
 So by now you must be keenly aware of the fact that you have not defined a
 single route, but yet routing is obviously taking place. "Is this voodoo?"
