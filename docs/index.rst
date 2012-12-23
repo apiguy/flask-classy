@@ -217,7 +217,7 @@ Using multiple routes for a single view
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 What happens when you need to apply more than one route to a specific view
-(for what it's worth, Flask core deveoper Armin Ronacher `says doing that is
+(for what it's worth, Flask core developer Armin Ronacher `says doing that is
 a bad idea <http://stackoverflow.com/a/7876088/105987>`_). But since you're so
 determined let's see how to do that anyway.
 
@@ -352,7 +352,7 @@ method names:
     ============ ================================
 
 **delete**
-    More RESTfulness. It's the most self explanitory of all the RESTful
+    More RESTfulness. It's the most self explanatory of all the RESTful
     methods, and it's commonly used to destroy a specific resource. The
     automatically generated route is:
 
