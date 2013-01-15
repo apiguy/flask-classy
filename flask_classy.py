@@ -77,7 +77,7 @@ class FlaskView(object):
             cls.route_base = route_base
 
         if not subdomain:
-            if hasattr(app, "subdomain") and app.subdomain != None:
+            if hasattr(app, "subdomain") and app.subdomain is not None:
                 subdomain = app.subdomain
             elif hasattr(cls, "subdomain"):
                 subdomain = cls.subdomain
