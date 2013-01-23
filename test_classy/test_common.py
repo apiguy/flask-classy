@@ -63,6 +63,10 @@ def test_custom_http_method():
     resp = client.post("/basic/route3/")
     eq_("Custom HTTP Method", resp.data)
 
+def test_docstrings():
+    proxy_func = app.view_functions["BasicView:index"]
+    eq_(proxy_func.__doc__, BasicView.index.__doc__)
+
 
 
 

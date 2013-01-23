@@ -10,6 +10,7 @@
 
 __version__ = "0.5.2"
 
+import functools
 import inspect
 from flask import Response, make_response
 import re
@@ -147,8 +148,11 @@ class FlaskView(object):
         :param name: the name of the method to create a proxy for
         """
 
+        i = cls()
+        view = getattr(i, name)
+
+        @functools.wraps(view)
         def proxy(*args, **kwargs):
-            i = cls()
             if hasattr(i, "before_request"):
                 i.before_request(name, *args, **kwargs)
 
@@ -157,7 +161,6 @@ class FlaskView(object):
                 before_view = getattr(i, before_view_name)
                 before_view(*args, **kwargs)
 
-            view = getattr(i, name)
             response = view(*args, **kwargs)
             if not isinstance(response, Response):
                 response = make_response(response)
