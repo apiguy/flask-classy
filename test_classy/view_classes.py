@@ -3,6 +3,7 @@ from flask_classy import FlaskView, route
 class BasicView(FlaskView):
 
     def index(self):
+        """A docstring for testing that docstrings are set"""
         return "Index"
 
     def get(self, obj_id):
