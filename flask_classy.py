@@ -185,6 +185,7 @@ class FlaskView(object):
         all_members = inspect.getmembers(cls, predicate=inspect.ismethod)
         return [member for member in all_members
                 if not member[0] in base_members
+                and not member[1].im_self == cls
                 and not member[0].startswith("_")
                 and not member[0].startswith("before_")
                 and not member[0].startswith("after_")]

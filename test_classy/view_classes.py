@@ -98,6 +98,17 @@ class AfterRequestView(FlaskView):
     def index(self):
         return "Index"
 
+class VariedMethodsView(FlaskView):
 
+    def index(self):
+        return "Index"
+
+    @route("/routed/")
+    def routed_method(self):
+        return "Routed Method"
+
+    @classmethod
+    def class_method(cls):
+        return "Class Method"
 
 
