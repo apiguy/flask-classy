@@ -65,7 +65,13 @@ def test_bp_custom_http_method():
     resp = client.post("/basic/route3/")
     eq_("Custom HTTP Method", resp.data)
 
+def test_bp_url_prefix():
+    foo = Blueprint('foo', __name__)
+    BasicView.register(foo, route_base="/")
+    app.register_blueprint(foo, url_prefix='/foo')
 
+    resp = client.get('/foo/')
+    eq_('Index', resp.data)
 
 
 
