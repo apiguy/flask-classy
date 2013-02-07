@@ -154,7 +154,7 @@ so that everyone knows what a treat they are in for.
         def random(self):
             return choice(quotes)
 
-Load up http://localhost/quotes/word_bacon/ in your browser and behold
+Load up http://localhost:5000/quotes/word_bacon/ in your browser and behold
 your latest achievement.
 
 The route decorator takes exactly the same parameters as Flask's `app.route`
