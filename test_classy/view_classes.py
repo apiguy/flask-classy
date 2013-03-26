@@ -66,6 +66,25 @@ class IndexView(FlaskView):
     def index(self):
         return "Index"
 
+class RouteBaseView(FlaskView):
+    route_base = "/base-routed/"
+
+    def index(self):
+        return "Index"
+
+class VarBaseView(FlaskView):
+    route_base = "/var-base-route/<route>"
+
+    def before_index(self):
+        from flask import request
+        request.view_args.pop('route')
+
+    def index(self):
+        return "Custom routed."
+
+    # def with_base_arg(self, route):
+    #     return "Base route arg: " + route
+
 class BeforeRequestView(FlaskView):
 
     def before_request(self, name):

@@ -12,7 +12,7 @@ __version__ = "0.5.2"
 
 import functools
 import inspect
-from flask import Response, make_response
+from flask import request, Response, make_response
 import re
 
 _temp_rule_cache = None
@@ -152,16 +152,21 @@ class FlaskView(object):
         view = getattr(i, name)
 
         @functools.wraps(view)
-        def proxy(*args, **kwargs):
+        def proxy(**forgetable_view_args):
+            # Always pass the global request object's view_args, because they
+            # can be modified by intervening function before an endpoint or
+            # wrapper gets called. This matches Flask's behavior.
+            del forgetable_view_args
+
             if hasattr(i, "before_request"):
-                i.before_request(name, *args, **kwargs)
+                i.before_request(name, **request.view_args)
 
             before_view_name = "before_" + name
             if hasattr(i, before_view_name):
                 before_view = getattr(i, before_view_name)
-                before_view(*args, **kwargs)
+                before_view(**request.view_args)
 
-            response = view(*args, **kwargs)
+            response = view(**request.view_args)
             if not isinstance(response, Response):
                 response = make_response(response)
 
