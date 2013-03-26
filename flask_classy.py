@@ -12,7 +12,8 @@ __version__ = "0.5.2"
 
 import functools
 import inspect
-from flask import Response, make_response
+from werkzeug.routing import parse_rule
+from flask import request, Response, make_response
 import re
 
 _temp_rule_cache = None
@@ -152,16 +153,21 @@ class FlaskView(object):
         view = getattr(i, name)
 
         @functools.wraps(view)
-        def proxy(*args, **kwargs):
+        def proxy(**forgettable_view_args):
+            # Always use the global request object's view_args, because they
+            # can be modified by intervening function before an endpoint or
+            # wrapper gets called. This matches Flask's behavior.
+            del forgettable_view_args
+
             if hasattr(i, "before_request"):
-                i.before_request(name, *args, **kwargs)
+                i.before_request(name, **request.view_args)
 
             before_view_name = "before_" + name
             if hasattr(i, before_view_name):
                 before_view = getattr(i, before_view_name)
-                before_view(*args, **kwargs)
+                before_view(**request.view_args)
 
-            response = view(*args, **kwargs)
+            response = view(**request.view_args)
             if not isinstance(response, Response):
                 response = make_response(response)
 
@@ -205,11 +211,14 @@ class FlaskView(object):
 
         route_base = cls.get_route_base()
         rule_parts = [route_base, rule]
+        ignored_rule_args = ['self']
+        if hasattr(cls, 'base_args'):
+            ignored_rule_args += cls.base_args
 
         if method:
             args = inspect.getargspec(method)[0]
             for arg in args:
-                if arg != "self":
+                if arg not in ignored_rule_args:
                     rule_parts.append("<%s>" % arg)
 
         result = "/%s" % "/".join(rule_parts)
@@ -221,6 +230,8 @@ class FlaskView(object):
 
         if hasattr(cls, "route_base"):
             route_base = cls.route_base
+            base_rule = parse_rule(route_base)
+            cls.base_args = [r[2] for r in base_rule]
         else:
             if cls.__name__.endswith("View"):
                 route_base = cls.__name__[:-4].lower()
