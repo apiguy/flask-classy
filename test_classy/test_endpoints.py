@@ -38,4 +38,4 @@ def test_variable_route_popped_base():
 def test_variable_route_base():
     with app.test_request_context():
         url = url_for('VarBaseView:with_base_arg', route='bar')
-        eq_('/var-base-route/bar/', url)
+        eq_('/var-base-route/bar/with_base_arg/', url)

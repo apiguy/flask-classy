@@ -82,8 +82,8 @@ class VarBaseView(FlaskView):
     def index(self):
         return "Custom routed."
 
-    # def with_base_arg(self, route):
-    #     return "Base route arg: " + route
+    def with_base_arg(self, route):
+        return "Base route arg: " + route
 
 class BeforeRequestView(FlaskView):
 

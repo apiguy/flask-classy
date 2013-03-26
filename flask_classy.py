@@ -12,6 +12,7 @@ __version__ = "0.5.2"
 
 import functools
 import inspect
+from werkzeug.routing import parse_rule
 from flask import request, Response, make_response
 import re
 
@@ -210,11 +211,14 @@ class FlaskView(object):
 
         route_base = cls.get_route_base()
         rule_parts = [route_base, rule]
+        ignored_rule_args = ['self']
+        if hasattr(cls, 'base_args'):
+            ignored_rule_args += cls.base_args
 
         if method:
             args = inspect.getargspec(method)[0]
             for arg in args:
-                if arg != "self":
+                if arg not in ignored_rule_args:
                     rule_parts.append("<%s>" % arg)
 
         result = "/%s" % "/".join(rule_parts)
@@ -226,6 +230,8 @@ class FlaskView(object):
 
         if hasattr(cls, "route_base"):
             route_base = cls.route_base
+            base_rule = parse_rule(route_base)
+            cls.base_args = [r[2] for r in base_rule]
         else:
             if cls.__name__.endswith("View"):
                 route_base = cls.__name__[:-4].lower()
