@@ -52,6 +52,9 @@ class FlaskView(object):
 
     __metaclass__ = _FlaskViewMeta
 
+    #: A list of decorators to be applied to all view of this class
+    decorators = []
+
     @classmethod
     def register(cls, app, route_base=None, subdomain=None):
         """Registers a FlaskView class for use with a specific instance of a
@@ -151,6 +154,10 @@ class FlaskView(object):
 
         i = cls()
         view = getattr(i, name)
+
+        if cls.decorators:
+            for decorator in cls.decorators:
+                view = decorator(view)
 
         @functools.wraps(view)
         def proxy(**forgettable_view_args):
