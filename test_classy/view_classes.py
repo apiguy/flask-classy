@@ -1,4 +1,5 @@
 from flask_classy import FlaskView, route
+from functools import wraps
 
 class BasicView(FlaskView):
 
@@ -130,4 +131,18 @@ class VariedMethodsView(FlaskView):
     def class_method(cls):
         return "Class Method"
 
+def decorated(f):
+    @wraps(f)
+    def decorated_view(*args, **kwargs):
+      return f(*args, **kwargs)
+    return decorated_view
 
+class DecoratedView(FlaskView):
+
+    @decorated
+    def index(self):
+        return "Index"
+
+    @decorated
+    def get(self, id):
+        return "Get" + id
