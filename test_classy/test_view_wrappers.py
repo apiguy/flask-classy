@@ -31,5 +31,5 @@ def test_decorated_view():
     resp = client.get("/decorated/")
     eq_("Index", resp.data)
 
-    resp = client.get("/decorated/1234/")
+    resp = client.get("/decorated/1234")
     eq_("Get 1234", resp.data)

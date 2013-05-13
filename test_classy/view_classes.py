@@ -131,18 +131,22 @@ class VariedMethodsView(FlaskView):
     def class_method(cls):
         return "Class Method"
 
-def decorated(f):
+def func_decorator(f):
+    def decorated_view(*args, **kwargs):
+        return f(*args, **kwargs)
+    return decorated_view
+
+def wraps_decorator(f):
     @wraps(f)
     def decorated_view(*args, **kwargs):
       return f(*args, **kwargs)
     return decorated_view
 
 class DecoratedView(FlaskView):
-
-    @decorated
+    @func_decorator
     def index(self):
         return "Index"
 
-    @decorated
+    @func_decorator
     def get(self, id):
-        return "Get" + id
+        return "Get " + id

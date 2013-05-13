@@ -93,38 +93,40 @@ class FlaskView(object):
         for name, value in members:
             proxy = cls.make_proxy_method(name)
             route_name = cls.build_route_name(name)
+            try:
+                if hasattr(cls, "_rule_cache") and name in cls._rule_cache:
+                    for idx, cached_rule in enumerate(cls._rule_cache[name]):
+                        rule, options = cached_rule
+                        rule = cls.build_rule(rule)
+                        sub, ep, options = cls.parse_options(options)
 
-            if hasattr(cls, "_rule_cache") and name in cls._rule_cache:
-                for idx, cached_rule in enumerate(cls._rule_cache[name]):
-                    rule, options = cached_rule
-                    rule = cls.build_rule(rule)
-                    sub, ep, options = cls.parse_options(options)
+                        if not subdomain and sub:
+                            subdomain = sub
 
-                    if not subdomain and sub:
-                        subdomain = sub
+                        if ep:
+                            endpoint = ep
+                        elif len(cls._rule_cache[name]) == 1:
+                            endpoint = route_name
+                        else:
+                            endpoint = "%s_%d" % (route_name, idx,)
 
-                    if ep:
-                        endpoint = ep
-                    elif len(cls._rule_cache[name]) == 1:
-                        endpoint = route_name
+                        app.add_url_rule(rule, endpoint, proxy, subdomain=subdomain, **options)
+
+                elif name in special_methods:
+                    if name in ["get", "index"]:
+                        methods = ["GET"]
                     else:
-                        endpoint = "%s_%d" % (route_name, idx,)
+                        methods = [name.upper()]
 
-                    app.add_url_rule(rule, endpoint, proxy, subdomain=subdomain, **options)
+                    rule = cls.build_rule("/", value)
 
-            elif name in special_methods:
-                if name in ["get", "index"]:
-                    methods = ["GET"]
+                    app.add_url_rule(rule, route_name, proxy, methods=methods, subdomain=subdomain)
+
                 else:
-                    methods = [name.upper()]
-
-                rule = cls.build_rule("/", value)
-
-                app.add_url_rule(rule, route_name, proxy, methods=methods, subdomain=subdomain)
-
-            else:
-                rule = cls.build_rule('/%s/' % name, value,)
-                app.add_url_rule(rule, route_name, proxy, subdomain=subdomain)
+                    rule = cls.build_rule('/%s/' % name, value,)
+                    app.add_url_rule(rule, route_name, proxy, subdomain=subdomain)
+            except DecoratorCompatibilityError:
+                raise DecoratorCompatibilityError("Incompatible decorator detected on %s in class %s" % name, cls.__name__)
 
         if hasattr(cls, "orig_route_base"):
             cls.route_base = cls.orig_route_base
@@ -223,7 +225,7 @@ class FlaskView(object):
             ignored_rule_args += cls.base_args
 
         if method:
-            args = inspect.getargspec(method)[0]
+            args = get_true_argspec(method)[0]
             for arg in args:
                 if arg not in ignored_rule_args:
                     rule_parts.append("<%s>" % arg)
@@ -256,6 +258,29 @@ class FlaskView(object):
         :param method_name: the method name to use when building a route name
         """
         return cls.__name__ + ":%s" % method_name
+
+
+def get_true_argspec(method):
+    """Drills through layers of decorators attempting to locate the actual argspec for the method."""
+
+    argspec = inspect.getargspec(method)
+    args = argspec[0]
+    if args and args[0] == 'self':
+        return argspec
+    if hasattr(method, 'im_func'):
+        method = method.im_func
+    if not hasattr(method, 'func_closure'):
+        raise DecoratorCompatibilityError
+
+    method = method.func_closure[0].cell_contents
+    return get_true_argspec(method)
+
+
+class DecoratorCompatibilityError(Exception):
+    pass
+
+
+
 
 
 
