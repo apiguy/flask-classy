@@ -37,4 +37,4 @@ Flask_Classy.egg-info/*
 # Mac stuff
 .DS_Store
 
-docs/_build/html/Archive.zip
+docs/_build*
