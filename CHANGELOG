@@ -1,3 +1,33 @@
+2013-6-5 Freedom Dumlao <freedomdumlao@gmail.com>
+
+    Version 0.6
+
+    - **Breaking Changes**
+        * Classmethods are filtered out when determining which methods
+          should be routeable.
+
+    - Features
+        * FlaskViews now support a "decorators" attribute which takes a list
+          of decorators to apply to every method in that view.
+        * The route_base now supports arguments.
+        (Thanks to Philip Schleihauf)
+
+
+
+    - Bugfixes
+        * Fixed a bug that prevented Flask-Classy from generating routes for
+          methods that had used a decorator but did not also use the @route
+          decorator.
+          (Thanks to Shuhao Wu for reporting)
+        * view_args dict modifications made before the FlaskView view is called
+          are now available in the FlaskView.
+          (Thanks to Philip Schleihauf)
+
+    - Thanks:
+        * Thanks to Max Countryman, Julien Rebetez, Philip Schleihauf, and Shuhao Wu
+
+
+
 2012-11-29  Freedom Dumlao <freedomdumlao@gmail.com>
 
     Version 0.5.2
