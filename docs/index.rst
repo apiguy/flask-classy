@@ -31,9 +31,9 @@ views for the same resource into a single class.
 "But my projects aren't that big. Can Flask-Classy do
 anything else for me besides making a big project easier to manage?"
 
-Why yes. It does help a bit with one other thing.
+Why yes. It does help a bit with some other things.
 
-`Flask-Classy` will automatically generate routes based on the methods
+For example, `Flask-Classy` will automatically generate routes based on the methods
 in your views, and makes it super simple to override those routes
 using Flask's familiar decorator syntax.
 
@@ -128,6 +128,8 @@ Not at all. Flask-Classy will automatically create routes for any method
 in a FlaskView that doesn't begin with an underscore character.
 You can still define your own routes of course, and we'll look at that next.
 
+
+
 Using custom routes
 -------------------
 
@@ -163,9 +165,7 @@ views you create.
 
 .. note::
     If you want to use other decorators with your views, you'll need to
-    make sure that the ``@route`` decorators are last (closest to the
-    method definition). I'm working on a way to change this requirement
-    in a future release.
+    make sure that the ``@route`` decorators are first.
 
 So far, all of our urls have been prefixed by that `/quotes` bit and you
 have probably deduced that it was derived from the name of your FlaskView
@@ -363,6 +363,48 @@ method names:
     ============ ================================
 
 
+url_for art thou, Romeo?
+--------------------------
+
+Sorry that's a terrible name for a section header, but naming things is what
+am the least skilled at, so please bear with me.
+
+Once you've got your `FlaskView` registered, you'll probably want to be able
+to get the urls for it in your templates and redirects and whatnot. Flask
+ships with the awesome `url_for` function that does an excellent job of
+turning a function name into a url that maps to it. You can use `url_for`
+with Flask-Classy by using the format "<Class name>:<method name>". Let's
+look at an example::
+
+    class DuckyView(FlaskView):
+        def index(self):
+            return "Duckies!"
+
+        def get(self, name):
+            return "Duck %s" % name
+
+        @route('/do_duck_stuff', endpoint='do_duck_stuff')
+        def post(self):
+            return "Um... Quack?"
+
+In this example, you can get a url to the index method using::
+
+    url_for("DuckyView:index")
+
+And you can get a url to the get method using::
+
+    url_for("DuckyView:get", name="Howard")
+
+And for that view with the custom endpoint defined?::
+
+    url_for("do_duck_stuff")
+
+.. note::
+    Notice that the custom endpoint does not get prefixed with the class
+    name like the auto-generated endpoints. When you define a custom
+    endpoint, we hand that over to Flask in it's original, unaltered form.
+
+
 Your own methods (they're special too!)
 ---------------------------------------
 
@@ -412,8 +454,41 @@ too. If you were to define another view like this::
     route yourself using the `@route` decorator.
 
 
-Wrapping Views
---------------
+Decorating Tips
+---------------
+
+So if you're like me (and who isn't?), you think that FlaskViews are
+frickin' beautiful. But once you've moved in it's nice to add a little
+personal touch, don't you think?
+
+Of course I'm talking about decorators. The `Flask` ecosystem is full of
+excellent extensions that allow you to customize a view's behavior
+simply by adding a decorator, and you can use them with your
+FlaskView's too.::
+
+    class BetterButterView(FlaskView):
+
+        @login_required  # Ain't it pretty?
+        def super_secret(self):
+            return "It's a secret to everyone."
+
+But what about when you want to add a decorator to every method in your
+`FlaskView`? All you need to do is add a `decorators` attribute to the
+class definition with a list of decorators you want applied to every
+method and `Flask-Classy` will take care of the rest::
+
+    class WhataGreatView(FlaskView):
+        decorators = [login_required]
+
+        def this_is_secret(self):
+            return "If you see this, you're logged in."
+
+        def so_is_this(self):
+            return "Looking at me? I guess you're logged in."
+
+
+Before and After
+----------------
 
 Hey, remember that time when you made that big 'ol `Flask` app and then
 had those ``@app.before_reqeust`` and ``@app.after_request``
