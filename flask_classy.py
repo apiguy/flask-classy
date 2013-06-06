@@ -267,9 +267,9 @@ def get_true_argspec(method):
     args = argspec[0]
     if args and args[0] == 'self':
         return argspec
-    if hasattr(method, 'im_func'):
-        method = method.im_func
-    if not hasattr(method, 'func_closure'):
+    if hasattr(method, '__func__'):
+        method = method.__func__
+    if not hasattr(method, 'func_closure') or method.func_closure is None:
         raise DecoratorCompatibilityError
 
     method = method.func_closure[0].cell_contents
