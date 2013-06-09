@@ -126,7 +126,7 @@ class FlaskView(object):
                     rule = cls.build_rule('/%s/' % name, value,)
                     app.add_url_rule(rule, route_name, proxy, subdomain=subdomain)
             except DecoratorCompatibilityError:
-                raise DecoratorCompatibilityError("Incompatible decorator detected on %s in class %s" % name, cls.__name__)
+                raise DecoratorCompatibilityError("Incompatible decorator detected on %s in class %s" % (name, cls.__name__))
 
         if hasattr(cls, "orig_route_base"):
             cls.route_base = cls.orig_route_base
