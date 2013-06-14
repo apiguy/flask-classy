@@ -1,5 +1,5 @@
 from flask import Flask, url_for
-from view_classes import BasicView, IndexView, RouteBaseView, VarBaseView
+from .view_classes import BasicView, IndexView, RouteBaseView, VarBaseView
 from nose.tools import *
 
 app = Flask("common")

@@ -8,8 +8,9 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = "0.5.2"
+__version__ = "0.6.1"
 
+import sys
 import functools
 import inspect
 from werkzeug.routing import parse_rule
@@ -17,6 +18,8 @@ from flask import request, Response, make_response
 import re
 
 _temp_rule_cache = None
+_py2 = sys.version_info[0] == 2
+
 
 def route(rule, **options):
     """A decorator that is used to define custom routes for methods in
@@ -37,6 +40,7 @@ def route(rule, **options):
 
     return decorator
 
+
 class _FlaskViewMeta(type):
 
     def __init__(cls, name, bases, dct):
@@ -45,15 +49,20 @@ class _FlaskViewMeta(type):
             cls._rule_cache = _temp_rule_cache
             _temp_rule_cache = None
 
-class FlaskView(object):
+
+# This is how we support metaclasses in both Python 2 and Python 3
+_FlaskViewBase = _FlaskViewMeta('_FlaskViewBase', (object, ), {})
+
+
+class FlaskView(_FlaskViewBase):
     """Base view for any class based views implemented with Flask-Classy. Will
     automatically configure routes when registered with a Flask app instance.
     """
 
     __metaclass__ = _FlaskViewMeta
 
-    #: A list of decorators to be applied to all view of this class
     decorators = []
+    route_base = None
 
     @classmethod
     def register(cls, app, route_base=None, subdomain=None):
@@ -76,9 +85,7 @@ class FlaskView(object):
             raise TypeError("cls must be a subclass of FlaskVew, not FlaskView itself")
 
         if route_base:
-            if hasattr(cls, "route_base"):
-                cls.orig_route_base = cls.route_base
-
+            cls.orig_route_base = cls.route_base
             cls.route_base = route_base
 
         if not subdomain:
@@ -87,7 +94,7 @@ class FlaskView(object):
             elif hasattr(cls, "subdomain"):
                 subdomain = cls.subdomain
 
-        members = cls.find_member_methods()
+        members = get_interesting_members(FlaskView, cls)
         special_methods = ["get", "put", "patch", "post", "delete", "index"]
 
         for name, value in members:
@@ -131,8 +138,6 @@ class FlaskView(object):
         if hasattr(cls, "orig_route_base"):
             cls.route_base = cls.orig_route_base
             del cls.orig_route_base
-
-
 
     @classmethod
     def parse_options(cls, options):
@@ -193,19 +198,6 @@ class FlaskView(object):
         return proxy
 
     @classmethod
-    def find_member_methods(cls):
-        """Returns a list of methods that can be routed to"""
-
-        base_members = dir(FlaskView)
-        all_members = inspect.getmembers(cls, predicate=inspect.ismethod)
-        return [member for member in all_members
-                if not member[0] in base_members
-                and not member[1].im_self == cls
-                and not member[0].startswith("_")
-                and not member[0].startswith("before_")
-                and not member[0].startswith("after_")]
-
-    @classmethod
     def build_rule(cls, rule, method=None):
         """Creates a routing rule based on either the class name (minus the
         'View' suffix) or the defined `route_base` attribute of the class
@@ -237,7 +229,7 @@ class FlaskView(object):
     def get_route_base(cls):
         """Returns the route base to use for the current class."""
 
-        if hasattr(cls, "route_base"):
+        if cls.route_base is not None:
             route_base = cls.route_base
             base_rule = parse_rule(route_base)
             cls.base_args = [r[2] for r in base_rule]
@@ -260,6 +252,20 @@ class FlaskView(object):
         return cls.__name__ + ":%s" % method_name
 
 
+def get_interesting_members(base_class, cls):
+    """Returns a list of methods that can be routed to"""
+
+    base_members = dir(base_class)
+    predicate = inspect.ismethod if _py2 else inspect.isfunction
+    all_members = inspect.getmembers(cls, predicate=predicate)
+    return [member for member in all_members
+            if not member[0] in base_members
+            and ((hasattr(member[1], "__self__") and not member[1].__self__ in inspect.getmro(cls)) if _py2 else True)
+            and not member[0].startswith("_")
+            and not member[0].startswith("before_")
+            and not member[0].startswith("after_")]
+
+
 def get_true_argspec(method):
     """Drills through layers of decorators attempting to locate the actual argspec for the method."""
 
@@ -269,10 +275,10 @@ def get_true_argspec(method):
         return argspec
     if hasattr(method, '__func__'):
         method = method.__func__
-    if not hasattr(method, 'func_closure') or method.func_closure is None:
+    if not hasattr(method, '__closure__') or method.__closure__ is None:
         raise DecoratorCompatibilityError
 
-    method = method.func_closure[0].cell_contents
+    method = method.__closure__[0].cell_contents
     return get_true_argspec(method)
 
 

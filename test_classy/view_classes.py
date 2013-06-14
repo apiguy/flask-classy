@@ -131,6 +131,9 @@ class VariedMethodsView(FlaskView):
     def class_method(cls):
         return "Class Method"
 
+class SubVariedMethodsView(VariedMethodsView):
+    pass
+
 def func_decorator(f):
     def decorated_view(*args, **kwargs):
         return f(*args, **kwargs)
