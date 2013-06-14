@@ -1,3 +1,19 @@
+2013-6-13 Freedom Dumlao <freedomdumlao@gmail.com>
+
+    Version 0.6.3
+
+    - Features:
+        * Python 3.3 and Flask 0.10 is now supported.
+
+    - Bugfixes
+        * Fixed a that would cause FlaskViews without route_base
+          attributes to fail to revert to that state after
+          having them registered with a route_base in the register
+          method.
+
+    - Thanks:
+        * Thanks to Ivan Kleshnin, who reported the bug.
+
 2013-6-10 Freedom Dumlao <freedomdumlao@gmail.com>
 
     Version 0.6.1
