@@ -101,37 +101,39 @@ class FlaskView(_FlaskViewBase):
             proxy = cls.make_proxy_method(name)
             route_name = cls.build_route_name(name)
             try:
-                if hasattr(cls, "_rule_cache") and name in cls._rule_cache:
-                    for idx, cached_rule in enumerate(cls._rule_cache[name]):
-                        rule, options = cached_rule
-                        rule = cls.build_rule(rule)
-                        sub, ep, options = cls.parse_options(options)
+                for _cls in cls.mro()[:-1]:
+                    if hasattr(_cls, "_rule_cache") and name in _cls._rule_cache:
+                        for idx, cached_rule in enumerate(_cls._rule_cache[name]):
+                            rule, options = cached_rule
+                            rule = _cls.build_rule(rule)
+                            sub, ep, options = _cls.parse_options(options)
 
-                        if not subdomain and sub:
-                            subdomain = sub
+                            if not subdomain and sub:
+                                subdomain = sub
 
-                        if ep:
-                            endpoint = ep
-                        elif len(cls._rule_cache[name]) == 1:
-                            endpoint = route_name
-                        else:
-                            endpoint = "%s_%d" % (route_name, idx,)
+                            if ep:
+                                endpoint = ep
+                            elif len(_cls._rule_cache[name]) == 1:
+                                endpoint = route_name
+                            else:
+                                endpoint = "%s_%d" % (route_name, idx,)
 
-                        app.add_url_rule(rule, endpoint, proxy, subdomain=subdomain, **options)
-
-                elif name in special_methods:
-                    if name in ["get", "index"]:
-                        methods = ["GET"]
-                    else:
-                        methods = [name.upper()]
-
-                    rule = cls.build_rule("/", value)
-
-                    app.add_url_rule(rule, route_name, proxy, methods=methods, subdomain=subdomain)
-
+                            app.add_url_rule(rule, endpoint, proxy, subdomain=subdomain, **options)
+                        break
                 else:
-                    rule = cls.build_rule('/%s/' % name, value,)
-                    app.add_url_rule(rule, route_name, proxy, subdomain=subdomain)
+                    if name in special_methods:
+                        if name in ["get", "index"]:
+                            methods = ["GET"]
+                        else:
+                            methods = [name.upper()]
+
+                        rule = cls.build_rule("/", value)
+
+                        app.add_url_rule(rule, route_name, proxy, methods=methods, subdomain=subdomain)
+
+                    else:
+                        rule = cls.build_rule('/%s/' % name, value,)
+                        app.add_url_rule(rule, route_name, proxy, subdomain=subdomain)
             except DecoratorCompatibilityError:
                 raise DecoratorCompatibilityError("Incompatible decorator detected on %s in class %s" % (name, cls.__name__))
 
