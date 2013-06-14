@@ -4,11 +4,11 @@
 
     Class based views for the Flask microframework.
 
-    :copyright: (c) 2012 by Freedom Dumlao.
+    :copyright: (c) 2013 by Freedom Dumlao.
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = "0.6.1"
+__version__ = "0.6.3"
 
 import sys
 import functools
