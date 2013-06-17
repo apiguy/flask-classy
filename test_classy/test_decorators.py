@@ -13,3 +13,7 @@ def test_func_decorator_index():
 def test_func_decorator_get():
 	resp = client.get('/decorated/1234')
 	eq_(b"Get 1234", resp.data)
+
+def test_func_special_decorator():
+  resp = client.get('/decorated/special/someid')
+  eq_(b"someid1", resp.data)
