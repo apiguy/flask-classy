@@ -142,7 +142,14 @@ def func_decorator(f):
 def wraps_decorator(f):
     @wraps(f)
     def decorated_view(*args, **kwargs):
-      return f(*args, **kwargs)
+        return f(*args, **kwargs)
+    return decorated_view
+
+def specialized_decorator(f):
+    @wraps(f)
+    def decorated_view(id, *args, **kwargs):
+        transformed_id = id + "1"
+        return f(transformed_id, *args, **kwargs)
     return decorated_view
 
 class DecoratedView(FlaskView):
@@ -153,3 +160,8 @@ class DecoratedView(FlaskView):
     @func_decorator
     def get(self, id):
         return "Get " + id
+
+    @route("/special/<id>")
+    @specialized_decorator
+    def special(self, transformed_id):
+        return transformed_id
