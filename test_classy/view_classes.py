@@ -153,3 +153,18 @@ class DecoratedView(FlaskView):
     @func_decorator
     def get(self, id):
         return "Get " + id
+
+
+class InheritanceView(BasicView):
+
+    # Tests method override
+    def get(self, obj_id):
+        return "Inheritance Get " + obj_id
+
+    @route('/<obj_id>/delete', methods=['DELETE'])
+    def delete(self, obj_id):
+        return "Inheritance Delete " + obj_id
+
+    @route('/with_route')
+    def with_route(self):
+        return "Inheritance with route"
