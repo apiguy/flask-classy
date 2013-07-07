@@ -278,8 +278,14 @@ def get_true_argspec(method):
     if not hasattr(method, '__closure__') or method.__closure__ is None:
         raise DecoratorCompatibilityError
 
-    method = method.__closure__[0].cell_contents
-    return get_true_argspec(method)
+    closure = method.__closure__
+    for cell in closure:
+        inner_method = cell.cell_contents
+        if inner_method is method:
+            continue
+        true_argspec = get_true_argspec(inner_method)
+        if true_argspec:
+            return true_argspec
 
 
 class DecoratorCompatibilityError(Exception):
