@@ -145,6 +145,18 @@ def wraps_decorator(f):
       return f(*args, **kwargs)
     return decorated_view
 
+def recursive_decorator(f):
+    @wraps(f)
+    def decorated_view(*args, **kwargs):
+        decorated_view.foo()
+        return f(*args, **kwargs)
+
+    def foo():
+        return 'bar'
+    decorated_view.foo = foo
+
+    return decorated_view
+
 class DecoratedView(FlaskView):
     @func_decorator
     def index(self):
@@ -153,6 +165,10 @@ class DecoratedView(FlaskView):
     @func_decorator
     def get(self, id):
         return "Get " + id
+
+    @recursive_decorator
+    def post(self):
+        return "Post"
 
 
 class InheritanceView(BasicView):
