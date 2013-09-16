@@ -86,6 +86,10 @@ class VarBaseView(FlaskView):
     def with_base_arg(self, route):
         return "Base route arg: " + route
 
+    @route('/local/<route_local>', methods=['GET'])
+    def with_route_arg(self, route, route_local):
+        return "%s %s" % (route, route_local)
+
 class BeforeRequestView(FlaskView):
 
     def before_request(self, name):
