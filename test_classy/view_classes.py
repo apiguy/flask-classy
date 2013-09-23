@@ -1,4 +1,4 @@
-from flask_classy import FlaskView, route
+from flask_classy import FlaskView, route, not_exposed
 from functools import wraps
 
 class BasicView(FlaskView):
@@ -140,6 +140,11 @@ class VariedMethodsView(FlaskView):
     @classmethod
     def class_method(cls):
         return "Class Method"
+
+    @not_exposed
+    def non_exposed(self):
+        pass
+
 
 class SubVariedMethodsView(VariedMethodsView):
     pass

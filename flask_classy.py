@@ -289,6 +289,14 @@ class FlaskView(_FlaskViewBase):
         return cls.__name__ + ":%s" % method_name
 
 
+def not_exposed(method):
+    """ Decorator used to declare a simple class method that isn't a Flask
+    view.
+    """
+    method.__exposed = False
+    return method
+
+
 def get_interesting_members(base_class, cls):
     """Returns a list of methods that can be routed to"""
 
@@ -300,7 +308,8 @@ def get_interesting_members(base_class, cls):
             and ((hasattr(member[1], "__self__") and not member[1].__self__ in inspect.getmro(cls)) if _py2 else True)
             and not member[0].startswith("_")
             and not member[0].startswith("before_")
-            and not member[0].startswith("after_")]
+            and not member[0].startswith("after_")
+            and getattr(member[1], '__exposed', True)]
 
 
 def get_true_argspec(method):
