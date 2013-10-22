@@ -8,7 +8,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = "0.6.3"
+__version__ = "0.6.4"
 
 import sys
 import functools
@@ -63,9 +63,10 @@ class FlaskView(_FlaskViewBase):
 
     decorators = []
     route_base = None
+    route_prefix = None
 
     @classmethod
-    def register(cls, app, route_base=None, subdomain=None):
+    def register(cls, app, route_base=None, subdomain=None, route_prefix=None):
         """Registers a FlaskView class for use with a specific instance of a
         Flask app. Any methods not prefixes with an underscore are candidates
         to be routed and will have routes registered when this method is
@@ -79,6 +80,10 @@ class FlaskView(_FlaskViewBase):
 
         :param subdomain:  A subdomain that this registration should use when
                            configuring routes.
+
+        :param route_prefix: A prefix to be applied to all routes registered
+                             for this class. Precedes route_base. Overrides
+                             the class' route_prefix if it has been set.
         """
 
         if cls is FlaskView:
@@ -87,6 +92,10 @@ class FlaskView(_FlaskViewBase):
         if route_base:
             cls.orig_route_base = cls.route_base
             cls.route_base = route_base
+
+        if route_prefix:
+            cls.orig_route_prefix = cls.route_prefix
+            cls.route_prefix = route_prefix
 
         if not subdomain:
             if hasattr(app, "subdomain") and app.subdomain is not None:
@@ -138,6 +147,10 @@ class FlaskView(_FlaskViewBase):
         if hasattr(cls, "orig_route_base"):
             cls.route_base = cls.orig_route_base
             del cls.orig_route_base
+
+        if hasattr(cls, "orig_route_prefix"):
+            cls.route_prefix = cls.orig_route_prefix
+            del cls.orig_route_prefix
 
     @classmethod
     def parse_options(cls, options):
@@ -210,8 +223,16 @@ class FlaskView(_FlaskViewBase):
                        method here. arguments named "self" will be ignored
         """
 
+        rule_parts = []
+
+        if cls.route_prefix:
+            rule_parts.append(cls.route_prefix)
+
         route_base = cls.get_route_base()
-        rule_parts = [route_base, rule]
+        if route_base:
+            rule_parts.append(route_base)
+
+        rule_parts.append(rule)
         ignored_rule_args = ['self']
         if hasattr(cls, 'base_args'):
             ignored_rule_args += cls.base_args
@@ -224,6 +245,7 @@ class FlaskView(_FlaskViewBase):
 
         result = "/%s" % "/".join(rule_parts)
         return re.sub(r'(/)\1+', r'\1', result)
+
 
     @classmethod
     def get_route_base(cls):

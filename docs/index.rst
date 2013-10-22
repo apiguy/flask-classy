@@ -173,6 +173,67 @@ instance (minus the "View" suffix, of course.) "That's all well and good,"
 you're saying, "but how do I change that? What if I want my views at the
 root?" Well, person, I have an answer for you.
 
+
+Flask-Classy's way of talking about "routes"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+OK, So I don't want to start inventing a new language (actually I'd love to
+invent a new language, just not right now...) for talking about URLs, but
+since Flask-Classy gives you a lot of flexibility in customizing your routes
+we might as well make sure we're talking about the same things when we talk
+about what you can do.
+
+What you see below is a route comprised of a route prefix, and a route base:
+
+    /neat_prefix/great_base/
+
+The prefix `/neat_prefix/` is only included if you explicitly specify a
+a prefix for the FlaskView, otherwise no prefix will be applied.
+
+The route base `/great_base/` will always exist, either because it was
+inferred automatically from the name of the FlaskView class, or because you
+specified a route base to use.
+
+
+Specifying a Route Prefix
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A route prefix is a great way to define a common base to urls. For example lets
+say you had a bunch of views that were all part of your application's api system.
+
+You *could* write custom route bases for all of them, but if you want to use
+Flask Classy's (admittedly amazing) automatic route generation stuff you'll lose
+the part where it infers the route base from the name of the class.
+
+A better choice is to use a route prefix.
+
+You can specify a route prefix either as an attribute of the FlaskView, or when you
+register the FlaskView with the application.
+
+As an attribute:
+****************
+
+Using an attribute is a great way to define a default prefix, as you can always
+override this value when you register the FlaskView with your app:
+
+    class BurgundyView(FlaskView):
+        route_prefix = '/colors/'
+
+        def index(self):
+            ...
+
+When registering:
+*****************
+
+Alternatively (or additionally, if you like) you can specify a route prefix when
+you register the route with your app:
+
+    BurgundyView.register(app, route_prefix='/redish_colors/')
+
+And this will override any route prefixes set on the FlaskView class itself.
+
+
+
 Customizing the Route Base
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -250,6 +311,7 @@ first I want to know how you managed to pronounce _0. But really the reason
 is that since there is more than one route, an index is added to prevent an
 endpoint collision. This differs from the default behavior of `Flask`, which
 allows you to create collisions.
+
 
 Specify your own damn endpoint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
