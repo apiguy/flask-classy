@@ -810,4 +810,4 @@ API
 
 ----
 
-© Copyright 2012 by Freedom Dumlao, `Follow Me @apiguy <https://twitter.com/APIguy>`_
+© Copyright 2013 by Freedom Dumlao, `Follow Me @apiguy <https://twitter.com/APIguy>`_
