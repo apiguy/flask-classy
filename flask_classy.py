@@ -238,10 +238,14 @@ class FlaskView(_FlaskViewBase):
             ignored_rule_args += cls.base_args
 
         if method:
-            args = get_true_argspec(method)[0]
-            for arg in args:
+            argspec = get_true_argspec(method)
+            args = argspec[0]
+            query_params = argspec[3] # All default args that should be ignored
+            for i, arg in enumerate(args):
                 if arg not in ignored_rule_args:
-                    rule_parts.append("<%s>" % arg)
+                    if not query_params or len(args) - i > len(query_params):
+                        # This is not optional param, so it's not query argument
+                        rule_parts.append("<%s>" % arg)
 
         result = "/%s" % "/".join(rule_parts)
         return re.sub(r'(/)\1+', r'\1', result)
