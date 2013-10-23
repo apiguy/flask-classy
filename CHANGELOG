@@ -1,5 +1,14 @@
 2013-10-22 Freedom Dumlao <freeedomdumlao@gmail.com>
 
+    Version 0.6.5
+
+    - Bugfixes:
+        * Fixes a bug introduced around certain types of decorators.
+          Adds more tests for those cases as well.
+          
+
+2013-10-22 Freedom Dumlao <freeedomdumlao@gmail.com>
+
     Version 0.6.4
 
     - Features:
