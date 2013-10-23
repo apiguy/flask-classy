@@ -8,7 +8,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = "0.6.4"
+__version__ = "0.6.5"
 
 import sys
 import functools
@@ -288,42 +288,26 @@ def get_interesting_members(base_class, cls):
             and not member[0].startswith("after_")]
 
 
-def get_true_argspec(raw_method):
+def get_true_argspec(method):
     """Drills through layers of decorators attempting to locate the actual argspec for the method."""
 
-    def is_bottom(method):
-        argspec = inspect.getargspec(method)
-        args = argspec[0]
-        if args and args[0] == 'self':
-            return True
-        if hasattr(method, '__func__'):
-            return False
-        if not hasattr(method, '__closure__') or method.__closure__ is None:
-            raise DecoratorCompatibilityError
+    argspec = inspect.getargspec(method)
+    args = argspec[0]
+    if args and args[0] == 'self':
+        return argspec
+    if hasattr(method, '__func__'):
+        method = method.__func__
+    if not hasattr(method, '__closure__') or method.__closure__ is None:
+        raise DecoratorCompatibilityError
 
-    def yield_next_down(method):
-        yield method
-        while True:
-            closure = method.__closure__
-            for cell in closure:
-                yield cell.cell_contents
-
-    front = yield_next_down(raw_method)
-    chase = None
-
-    for n, method in enumerate(front):
-        if method == chase:
-            raise DecoratorCompatibilityError
-        if is_bottom(method):
-            return inspect.getargspec(method)
-        if n % 3 == 0:
-            if not chase:
-                chase = yield_next_down(raw_method)
-            else:
-                chase = next(chase)
-
-
-    return None
+    closure = method.__closure__
+    for cell in closure:
+        inner_method = cell.cell_contents
+        if inner_method is method:
+            continue
+        true_argspec = get_true_argspec(inner_method)
+        if true_argspec:
+            return true_argspec
 
 
 class DecoratorCompatibilityError(Exception):

@@ -45,3 +45,4 @@ def test_variable_route_base_with_local_route_var():
     client = app.test_client()
     resp = client.get('/var-base-route/bar/local/baz')
     eq_(resp.data, b"bar baz")
+

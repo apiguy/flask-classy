@@ -214,7 +214,7 @@ As an attribute:
 ****************
 
 Using an attribute is a great way to define a default prefix, as you can always
-override this value when you register the FlaskView with your app:
+override this value when you register the FlaskView with your app::
 
     class BurgundyView(FlaskView):
         route_prefix = '/colors/'
@@ -226,7 +226,7 @@ When registering:
 *****************
 
 Alternatively (or additionally, if you like) you can specify a route prefix when
-you register the route with your app:
+you register the route with your app::
 
     BurgundyView.register(app, route_prefix='/redish_colors/')
 

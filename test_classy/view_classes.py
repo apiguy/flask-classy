@@ -167,6 +167,14 @@ def recursive_decorator(f):
 
     return decorated_view
 
+def more_recursive(stop_type):
+    def _inner(func):
+        def _recursive(*args, **kw):
+            return func(*args, **kw)
+        return _recursive
+    return _inner
+
+
 class DecoratedView(FlaskView):
     @func_decorator
     def index(self):
@@ -179,6 +187,32 @@ class DecoratedView(FlaskView):
     @recursive_decorator
     def post(self):
         return "Post"
+
+    @more_recursive(None)
+    def get_some(self):
+        return "Get Some"
+
+    @more_recursive(None)
+    @recursive_decorator
+    def get_this(self):
+        return "Get This"
+
+    @route('/mixitup')
+    @more_recursive(None)
+    @recursive_decorator
+    def mixitup(self):
+        return "Mix It Up"
+
+    @more_recursive(None)
+    def someval(self, val):
+        return "Someval " + val
+
+    @route('/anotherval/<val>')
+    @more_recursive(None)
+    @recursive_decorator
+    def anotherval(self, val):
+        return "Anotherval " + val
+
 
 
 class InheritanceView(BasicView):
