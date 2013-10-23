@@ -255,15 +255,21 @@ class FlaskView(_FlaskViewBase):
     def get_route_base(cls):
         """Returns the route base to use for the current class."""
 
+        first_cap_re = re.compile('(.)([A-Z][a-z]+)')
+        all_cap_re = re.compile('([a-z0-9])([A-Z])')
+        def dashify(name):
+            s1 = first_cap_re.sub(r'\1-\2', name)
+            return all_cap_re.sub(r'\1-\2', s1).lower()
+
         if cls.route_base is not None:
             route_base = cls.route_base
             base_rule = parse_rule(route_base)
             cls.base_args = [r[2] for r in base_rule]
         else:
             if cls.__name__.endswith("View"):
-                route_base = cls.__name__[:-4].lower()
+                route_base = dashify(cls.__name__[:-4])
             else:
-                route_base = cls.__name__.lower()
+                route_base = dashify(cls.__name__)
 
         return route_base.strip("/")
 
