@@ -62,6 +62,7 @@ class FlaskView(_FlaskViewBase):
     __metaclass__ = _FlaskViewMeta
 
     decorators = []
+    representations = {}
     route_base = None
     route_prefix = None
 
@@ -196,7 +197,17 @@ class FlaskView(_FlaskViewBase):
 
             response = view(**request.view_args)
             if not isinstance(response, Response):
-                response = make_response(response)
+                if not cls.representations:
+                    # No representations defined, then the default is to just output
+                    # what the view function returned as a response
+                    response = make_response(response)
+
+                # Return the representation that best matches the representations
+                # in the Accept header
+                resp_representation = request.accept_mimetypes.best_match(cls.representations.keys())
+                if not resp_representation:
+                    response = make_response(response)
+                response = cls.representations[resp_representation].output(response, 200)
 
             after_view_name = "after_" + name
             if hasattr(i, after_view_name):
