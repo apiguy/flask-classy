@@ -19,11 +19,11 @@ app.register_blueprint(bp2)
 client = app.test_client()
 
 def test_bp_attr_subdomain():
-    resp = client.get("/subdomainattribute/", base_url="http://sub1.test.test")
+    resp = client.get("/subdomain-attribute/", base_url="http://sub1.test.test")
     eq_(b"Index", resp.data)
 
 def test_bp_route_subdomain():
-    resp = client.get("/subdomainroute/", base_url="http://sub2.test.test")
+    resp = client.get("/subdomain-route/", base_url="http://sub2.test.test")
     eq_(b"Index", resp.data)
 
 def test_bp_register_subdomain():
