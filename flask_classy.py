@@ -196,18 +196,24 @@ class FlaskView(_FlaskViewBase):
                 before_view(**request.view_args)
 
             response = view(**request.view_args)
+            if isinstance(response, tuple):
+                code = response[1]
+                response = response[0]
+            else:
+                code = 200
             if not isinstance(response, Response):
                 if not cls.representations:
                     # No representations defined, then the default is to just output
                     # what the view function returned as a response
                     response = make_response(response)
-
-                # Return the representation that best matches the representations
-                # in the Accept header
-                resp_representation = request.accept_mimetypes.best_match(cls.representations.keys())
-                if not resp_representation:
-                    response = make_response(response)
-                response = cls.representations[resp_representation].output(response, 200)
+                else:
+                    # Return the representation that best matches the representations
+                    # in the Accept header
+                    resp_representation = request.accept_mimetypes.best_match(cls.representations.keys())
+                    if resp_representation:
+                        response = cls.representations[resp_representation].output(response, code)
+                    else:
+                        response = cls.representations[0].output(response, code)
 
             after_view_name = "after_" + name
             if hasattr(i, after_view_name):
