@@ -136,7 +136,7 @@ Using custom routes
 So let's pretend that `/quotes/random/` is just too unsightly and we must
 fix it to be something more spectacular forthwith. In a moment of blind
 inspiration we decide that getting a random quote is on par with receiving
-a rasher of your favorite porcine delicacy. The new url should be `/quotes/word_bacon/`
+a rasher of your favorite porcine delicacy. The new URL should be `/quotes/word_bacon/`
 so that everyone knows what a treat they are in for.
 
 ::
@@ -167,7 +167,7 @@ views you create.
     If you want to use other decorators with your views, you'll need to
     make sure that the ``@route`` decorators are first.
 
-So far, all of our urls have been prefixed by that `/quotes` bit and you
+So far, all of our URLs have been prefixed by that `/quotes` bit and you
 have probably deduced that it was derived from the name of your FlaskView
 instance (minus the "View" suffix, of course.) "That's all well and good,"
 you're saying, "but how do I change that? What if I want my views at the
@@ -187,7 +187,7 @@ What you see below is a route comprised of a route prefix, and a route base:
 
     /neat_prefix/great_base/
 
-The prefix `/neat_prefix/` is only included if you explicitly specify a
+The prefix `/neat_prefix/` is only included if you explicitly specify 
 a prefix for the FlaskView, otherwise no prefix will be applied.
 
 The route base `/great_base/` will always exist, either because it was
@@ -198,8 +198,8 @@ specified a route base to use.
 Specifying a Route Prefix
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A route prefix is a great way to define a common base to urls. For example lets
-say you had a bunch of views that were all part of your application's api system.
+A route prefix is a great way to define a common base to URLs. For example lets
+say you had a bunch of views that were all part of your application's API system.
 
 You *could* write custom route bases for all of them, but if you want to use
 Flask Classy's (admittedly amazing) automatic route generation stuff you'll lose
@@ -425,16 +425,16 @@ method names:
     ============ ================================
 
 
-url_for art thou, Romeo?
+URL_for art thou, Romeo?
 --------------------------
 
 Sorry that's a terrible name for a section header, but naming things is what
 am the least skilled at, so please bear with me.
 
 Once you've got your `FlaskView` registered, you'll probably want to be able
-to get the urls for it in your templates and redirects and whatnot. Flask
-ships with the awesome `url_for` function that does an excellent job of
-turning a function name into a url that maps to it. You can use `url_for`
+to get the URLs for it in your templates and redirects and whatnot. Flask
+ships with the awesome `URL_for` function that does an excellent job of
+turning a function name into a URL that maps to it. You can use `URL_for`
 with Flask-Classy by using the format "<Class name>:<method name>". Let's
 look at an example::
 
@@ -449,17 +449,17 @@ look at an example::
         def post(self):
             return "Um... Quack?"
 
-In this example, you can get a url to the index method using::
+In this example, you can get a URL to the index method using::
 
-    url_for("DuckyView:index")
+    URL_for("DuckyView:index")
 
-And you can get a url to the get method using::
+And you can get a URL to the get method using::
 
-    url_for("DuckyView:get", name="Howard")
+    URL_for("DuckyView:get", name="Howard")
 
 And for that view with the custom endpoint defined?::
 
-    url_for("do_duck_stuff")
+    URL_for("do_duck_stuff")
 
 .. note::
     Notice that the custom endpoint does not get prefixed with the class
@@ -552,7 +552,7 @@ method and `Flask-Classy` will take care of the rest::
 Before and After
 ----------------
 
-Hey, remember that time when you made that big 'ol `Flask` app and then
+Hey, remember that time when you made that big ol' `Flask` app and then
 had those ``@app.before_reqeust`` and ``@app.after_request``
 decorated methods? Remember how you only wanted some of them to run for
 certain views so you had all those ``if view == the_one_I_care_about:``
@@ -668,14 +668,14 @@ wrap your views:
     :name:       The name of the view that was called.
 
 
-    :resposne:   The response produced after calling the view.
+    :response:   The response produced after calling the view.
 
 
 **after_<view_method>(self, response)**
     Will be called after the <view_method> is called. You must return either
     the passed in response or a new response.
 
-    :resposne:   The response produced after calling the view.
+    :response:   The response produced after calling the view.
 
 
 Order of Wrapped Method Execution
@@ -705,11 +705,11 @@ registering routes for your FlaskViews. While the usefulness of this
 feature is probably apparent to many of you, let's go ahead and take a
 look at one of the many facilitative use cases.
 
-Suppose you've got a sweet api you're porting over from a legacy app
+Suppose you've got a sweet API you're porting over from a legacy app
 and in the migration you want to clean things up a bit and start using
 a subdomain like ``api.socool.biz`` instead of the old way of accessing
 it using ``api`` at the root of the path like ``socool.biz/api``. The
-only catch, of course, is that you have api clients still using that
+only catch, of course, is that you have API clients still using that
 old path based method. What is a hard working developer like you to do?
 
 Thanks to `Flask` and `Flask-Classy` you have some options. There are two
@@ -744,10 +744,10 @@ want to support at the same time you're registering your views::
     app = Flask(__name__)
     app.config['SERVER_NAME'] = 'socool.biz'
 
-    # This one matches urls like: http://socool.biz/api/...
+    # This one matches URLs like: http://socool.biz/api/...
     CoolApiView.register(app, route_base='/api/')
 
-    # This one matches urls like: http://api.socool.biz/...
+    # This one matches URLs like: http://api.socool.biz/...
     CoolApiView.register(app, route_base='/', subdomain='api')
 
     if __name__ == "__main__":
@@ -779,10 +779,10 @@ the ``FlaskView`` subclass::
     app = Flask(__name__)
     app.config['SERVER_NAME'] = 'socool.biz'
 
-    # This one matches urls like: http://socool.biz/api/...
+    # This one matches URLs like: http://socool.biz/api/...
     CoolApiView.register(app, route_base='/api/', subdomain='')
 
-    # This one matches urls like: http://api.socool.biz/...
+    # This one matches URLs like: http://api.socool.biz/...
     CoolApiView.register(app, route_base="/")
 
     if __name__ == "__main__":
