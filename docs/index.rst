@@ -425,7 +425,7 @@ method names:
     ============ ================================
 
 
-URL_for art thou, Romeo?
+url_for art thou, Romeo?
 --------------------------
 
 Sorry that's a terrible name for a section header, but naming things is what
@@ -433,8 +433,8 @@ am the least skilled at, so please bear with me.
 
 Once you've got your `FlaskView` registered, you'll probably want to be able
 to get the URLs for it in your templates and redirects and whatnot. Flask
-ships with the awesome `URL_for` function that does an excellent job of
-turning a function name into a URL that maps to it. You can use `URL_for`
+ships with the awesome `url_for` function that does an excellent job of
+turning a function name into a URL that maps to it. You can use `url_for`
 with Flask-Classy by using the format "<Class name>:<method name>". Let's
 look at an example::
 
@@ -451,15 +451,15 @@ look at an example::
 
 In this example, you can get a URL to the index method using::
 
-    URL_for("DuckyView:index")
+    url_for("DuckyView:index")
 
 And you can get a URL to the get method using::
 
-    URL_for("DuckyView:get", name="Howard")
+    url_for("DuckyView:get", name="Howard")
 
 And for that view with the custom endpoint defined?::
 
-    URL_for("do_duck_stuff")
+    url_for("do_duck_stuff")
 
 .. note::
     Notice that the custom endpoint does not get prefixed with the class
