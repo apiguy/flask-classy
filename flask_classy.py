@@ -8,7 +8,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = "0.6.6"
+__version__ = "0.6.7"
 
 import sys
 import functools
@@ -64,9 +64,11 @@ class FlaskView(_FlaskViewBase):
     decorators = []
     route_base = None
     route_prefix = None
+    trailing_slash = True
 
     @classmethod
-    def register(cls, app, route_base=None, subdomain=None, route_prefix=None):
+    def register(cls, app, route_base=None, subdomain=None, route_prefix=None,
+                 trailing_slash=None):
         """Registers a FlaskView class for use with a specific instance of a
         Flask app. Any methods not prefixes with an underscore are candidates
         to be routed and will have routes registered when this method is
@@ -103,6 +105,11 @@ class FlaskView(_FlaskViewBase):
             elif hasattr(cls, "subdomain"):
                 subdomain = cls.subdomain
 
+        if trailing_slash is not None:
+            cls.orig_trailing_slash = cls.trailing_slash
+            cls.trailing_slash = trailing_slash
+
+
         members = get_interesting_members(FlaskView, cls)
         special_methods = ["get", "put", "patch", "post", "delete", "index"]
 
@@ -135,11 +142,15 @@ class FlaskView(_FlaskViewBase):
                         methods = [name.upper()]
 
                     rule = cls.build_rule("/", value)
-
+                    if not cls.trailing_slash:
+                        rule = rule.rstrip("/")
                     app.add_url_rule(rule, route_name, proxy, methods=methods, subdomain=subdomain)
 
                 else:
-                    rule = cls.build_rule('/%s/' % name, value,)
+                    route_str = '/%s/' % name
+                    if not cls.trailing_slash:
+                        route_str = route_str.rstrip('/')
+                    rule = cls.build_rule(route_str, value)
                     app.add_url_rule(rule, route_name, proxy, subdomain=subdomain)
             except DecoratorCompatibilityError:
                 raise DecoratorCompatibilityError("Incompatible decorator detected on %s in class %s" % (name, cls.__name__))
@@ -151,6 +162,10 @@ class FlaskView(_FlaskViewBase):
         if hasattr(cls, "orig_route_prefix"):
             cls.route_prefix = cls.orig_route_prefix
             del cls.orig_route_prefix
+
+        if hasattr(cls, "orig_trailing_slash"):
+            cls.trailing_slash = cls.orig_trailing_slash
+            del cls.orig_trailing_slash
 
     @classmethod
     def parse_options(cls, options):

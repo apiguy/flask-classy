@@ -194,6 +194,11 @@ The route base `/great_base/` will always exist, either because it was
 inferred automatically from the name of the FlaskView class, or because you
 specified a route base to use.
 
+.. note::
+    Flask-Classy favors putting trailing slashes at the end of routes without parameters.
+    You can override this behavior by specifying `trailing_slash=False` either
+    as an attribute of your `FlaskView` or in the `register` method.
+
 
 Specifying a Route Prefix
 ~~~~~~~~~~~~~~~~~~~~~~~~~
