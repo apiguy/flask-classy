@@ -228,3 +228,58 @@ class InheritanceView(BasicView):
     @route('/with_route')
     def with_route(self):
         return "Inheritance with route"
+
+
+class TrailingSlashView(FlaskView):
+    trailing_slash = False
+    route_base = '/trailing/'
+
+    def index(self):
+        """A docstring for testing that docstrings are set"""
+        return "Index"
+
+    def get(self, obj_id):
+        return "Get " + obj_id
+
+    def put(self, id):
+        return "Put " + id
+
+    def patch(self, id):
+        return "Patch " + id
+
+    def post(self):
+        return "Post"
+
+    def delete(self, id):
+        return "Delete " + id
+
+    def custom_method(self):
+        return "Custom Method"
+
+    def custom_method_with_params(self, p_one, p_two):
+        return "Custom Method %s %s" % (p_one, p_two,)
+
+    @route("/routed/")
+    def routed_method(self):
+        return "Routed Method"
+
+    @route("/routed2")
+    def routed_method2(self):
+        return "Routed Method 2"
+
+
+class InheritedTrailingSlashView(TrailingSlashView):
+    route_base = '/inherited/trailing/'
+
+    def index(self):
+        return "Index"
+
+
+class OverrideInheritedTrailingSlashView(TrailingSlashView):
+    route_base = "/override/trailing/"
+    trailing_slash = True
+
+    def index(self):
+        return "Index"
+
+
