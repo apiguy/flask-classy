@@ -229,7 +229,7 @@ class FlaskView(_FlaskViewBase):
                         response = cls.representations[resp_representation].output(response, code)
                     else:
                         # Nothing adequate found, make the response any one of the representations defined
-                        response = cls.representations[cls.representations.keys()[0]].output(
+                        response = cls.representations[list(cls.representations.keys())[0]].output(
                                         response, code)
 
             after_view_name = "after_" + name
