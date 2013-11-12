@@ -93,20 +93,20 @@ client = app.test_client()
 
 def test_index_representation():
     resp = client.get("/representation/")
-    eq_(bytes(json.dumps([response_1, response_2])), resp.data)
+    eq_(json.dumps([response_1, response_2]), str(resp.data))
 
 def test_get_representation():
     resp = client.get("/representation/1")
-    eq_(bytes(json.dumps(response_get)), resp.data)
+    eq_(json.dumps(response_get), str(resp.data))
 
 def test_post_representation():
     resp = client.post("/representation/", headers=headers, data=json.dumps(data))
-    eq_(bytes(json.dumps(response_post)), resp.data)
+    eq_(json.dumps(response_post), str(resp.data))
 
 def test_put_representation():
     resp = client.put("/representation/1", headers=headers, data=json.dumps(data))
-    eq_(bytes(json.dumps(response_put)), resp.data)
+    eq_(json.dumps(response_put), str(resp.data))
 
 def test_delete_representation():
     resp = client.delete("/representation/1")
-    eq_(bytes(json.dumps(response_delete)), resp.data)
+    eq_(json.dumps(response_delete), str(resp.data))
