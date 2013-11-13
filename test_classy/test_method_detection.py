@@ -18,3 +18,7 @@ def test_subclass_classmethod_ignored():
     members = [m[1] for m in get_interesting_members(FlaskView, SubVariedMethodsView)]
     assert SubVariedMethodsView.class_method not in members
     assert VariedMethodsView.class_method not in members
+
+def test_non_classy_view():
+    members = [m[1] for m in get_interesting_members(FlaskView, VariedMethodsView)]
+    assert VariedMethodsView.non_exposed not in members
