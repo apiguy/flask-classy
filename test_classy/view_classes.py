@@ -112,6 +112,22 @@ class BeforeViewView(FlaskView):
     def index(self):
         return self.response
 
+class BeforeRequestReturnsView(FlaskView):
+
+    def before_request(self, name):
+        return "BEFORE"
+
+    def index(self):
+        return "Should never see this"
+
+class BeforeViewReturnsView(FlaskView):
+
+    def before_index(self):
+        return "BEFORE"
+
+    def index(self):
+        return "Should never see this"
+
 class AfterViewView(FlaskView):
 
     def after_index(self, response):
@@ -281,5 +297,6 @@ class OverrideInheritedTrailingSlashView(TrailingSlashView):
 
     def index(self):
         return "Index"
+
 
 

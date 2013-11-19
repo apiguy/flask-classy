@@ -8,7 +8,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = "0.6.7"
+__version__ = "0.6.8"
 
 import sys
 import functools
@@ -202,12 +202,16 @@ class FlaskView(_FlaskViewBase):
             del forgettable_view_args
 
             if hasattr(i, "before_request"):
-                i.before_request(name, **request.view_args)
+                response = i.before_request(name, **request.view_args)
+                if response is not None:
+                    return response
 
             before_view_name = "before_" + name
             if hasattr(i, before_view_name):
                 before_view = getattr(i, before_view_name)
-                before_view(**request.view_args)
+                response = before_view(**request.view_args)
+                if response is not None:
+                    return response
 
             response = view(**request.view_args)
             if not isinstance(response, Response):
