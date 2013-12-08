@@ -13,15 +13,15 @@ def test_index_subdomain():
     eq_(b"Index", resp.data)
 
 def test_get():
-    resp = client.get("/basic/1234", base_url="http://basic.test.test")
+    resp = client.get("/basic/1234/", base_url="http://basic.test.test")
     eq_(b"Get 1234", resp.data)
 
 def test_put():
-    resp = client.put("/basic/1234", base_url="http://basic.test.test")
+    resp = client.put("/basic/1234/", base_url="http://basic.test.test")
     eq_(b"Put 1234", resp.data)
 
 def test_patch():
-    resp = client.patch("/basic/1234", base_url="http://basic.test.test")
+    resp = client.patch("/basic/1234/", base_url="http://basic.test.test")
     eq_(b"Patch 1234", resp.data)
 
 def test_post():
@@ -29,7 +29,7 @@ def test_post():
     eq_(b"Post", resp.data)
 
 def test_delete():
-    resp = client.delete("/basic/1234", base_url="http://basic.test.test")
+    resp = client.delete("/basic/1234/", base_url="http://basic.test.test")
     eq_(b"Delete 1234", resp.data)
 
 def test_custom_method():

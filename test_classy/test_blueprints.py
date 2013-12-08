@@ -15,15 +15,15 @@ def test_bp_index():
     eq_(b"Index", resp.data)
 
 def test_bp_get():
-    resp = client.get("/basic/1234")
+    resp = client.get("/basic/1234/")
     eq_(b"Get 1234", resp.data)
 
 def test_bp_put():
-    resp = client.put("/basic/1234")
+    resp = client.put("/basic/1234/")
     eq_(b"Put 1234", resp.data)
 
 def test_bp_patch():
-    resp = client.patch("/basic/1234")
+    resp = client.patch("/basic/1234/")
     eq_(b"Patch 1234", resp.data)
 
 def test_bp_post():
@@ -31,7 +31,7 @@ def test_bp_post():
     eq_(b"Post", resp.data)
 
 def test_bp_delete():
-    resp = client.delete("/basic/1234")
+    resp = client.delete("/basic/1234/")
     eq_(b"Delete 1234", resp.data)
 
 def test_bp_custom_method():

@@ -13,7 +13,7 @@ def test_func_decorator_index():
 
 
 def test_func_decorator_get():
-    resp = client.get('/decorated/1234')
+    resp = client.get('/decorated/1234/')
     eq_(b"Get 1234", resp.data)
 
 

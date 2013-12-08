@@ -13,15 +13,15 @@ def test_index():
     eq_(b"Index", resp.data)
 
 def test_get():
-    resp = client.get("/basic/1234")
+    resp = client.get("/basic/1234/")
     eq_(b"Get 1234", resp.data)
 
 def test_put():
-    resp = client.put("/basic/1234")
+    resp = client.put("/basic/1234/")
     eq_(b"Put 1234", resp.data)
 
 def test_patch():
-    resp = client.patch("/basic/1234")
+    resp = client.patch("/basic/1234/")
     eq_(b"Patch 1234", resp.data)
 
 def test_post():
@@ -29,7 +29,7 @@ def test_post():
     eq_(b"Post", resp.data)
 
 def test_delete():
-    resp = client.delete("/basic/1234")
+    resp = client.delete("/basic/1234/")
     eq_(b"Delete 1234", resp.data)
 
 def test_custom_method():

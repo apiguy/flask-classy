@@ -103,3 +103,17 @@ def test_inherited_trailing_slash_override():
     resp = client.get("/override/trailing/")
     eq_(b"Index", resp.data)
 
+
+def test_inherited_trailing_slash_get_a_single_element():
+    resp = client.get("/override/trailing/1/")
+    eq_(b'Get 1', resp.data)
+
+
+def test_inherited_trailing_slash_get_url_without_ending_slash():
+    expect_redirect = 301
+    expect_success = 200
+    resp = client.get("/override/trailing/1")
+    eq_(expect_redirect, resp.status_code)
+
+    resp = client.get("/override/trailing/1", follow_redirects=True)
+    eq_(expect_success, resp.status_code)
