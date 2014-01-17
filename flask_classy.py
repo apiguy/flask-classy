@@ -67,6 +67,10 @@ class FlaskView(_FlaskViewBase):
     trailing_slash = True
 
     @classmethod
+    def get_decorators(cls):
+        return cls.decorators
+
+    @classmethod
     def register(cls, app, route_base=None, subdomain=None, route_prefix=None,
                  trailing_slash=None):
         """Registers a FlaskView class for use with a specific instance of a
@@ -190,9 +194,8 @@ class FlaskView(_FlaskViewBase):
         i = cls()
         view = getattr(i, name)
 
-        if cls.decorators:
-            for decorator in cls.decorators:
-                view = decorator(view)
+        for decorator in cls.get_decorators():
+            view = decorator(view)
 
         @functools.wraps(view)
         def proxy(**forgettable_view_args):

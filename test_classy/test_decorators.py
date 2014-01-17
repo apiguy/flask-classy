@@ -1,9 +1,12 @@
 from flask import Flask, url_for
-from .view_classes import DecoratedView
+from .view_classes import (DecoratedView, AutoDecoratedView,
+                           OverridenAutoDecoratedView)
 from nose.tools import *
 
 app = Flask("decorated")
 DecoratedView.register(app)
+AutoDecoratedView.register(app)
+OverridenAutoDecoratedView.register(app)
 client = app.test_client()
 
 
@@ -47,6 +50,10 @@ def test_recursive_with_route_with_parameter():
     eq_(b"Anotherval 1234", resp.data)
 
 
+def test_autodecorated():
+    resp = client.get('/autodecorated/')
+    eq_(b"foobar", resp.data)
 
-
-
+def test_overriden_autodecorated():
+    resp = client.get('/overridenautodecorated/')
+    eq_(b"foobar", resp.data)

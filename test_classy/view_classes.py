@@ -230,6 +230,29 @@ class DecoratedView(FlaskView):
         return "Anotherval " + val
 
 
+def foo_decorator(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        return 'foo' + func(*args, **kwargs)
+    return wrapped
+
+
+class AutoDecoratedView(FlaskView):
+    decorators = [foo_decorator]
+
+    def index(self):
+        return 'bar'
+
+
+class OverridenAutoDecoratedView(FlaskView):
+
+    @classmethod
+    def get_decorators(cls):
+        return [foo_decorator]
+
+    def index(self):
+        return 'bar'
+
 
 class InheritanceView(BasicView):
 
