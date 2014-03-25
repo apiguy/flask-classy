@@ -29,3 +29,8 @@ def test_with_route():
 def test_override_with_route():
     resp = client.delete("/inheritance/1234/delete")
     eq_(b"Inheritance Delete 1234", resp.data)
+
+
+def test_inherited_base_route():
+    resp = client.get("/inheritance/routed/")
+    eq_(b"Routed Method", resp.data)
