@@ -89,7 +89,7 @@ class FlaskView(_FlaskViewBase):
         """
 
         if cls is FlaskView:
-            raise TypeError("cls must be a subclass of FlaskVew, not FlaskView itself")
+            raise TypeError("cls must be a subclass of FlaskView, not FlaskView itself")
 
         if route_base:
             cls.orig_route_base = cls.route_base
