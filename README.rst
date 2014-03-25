@@ -548,6 +548,20 @@ method and `Flask-Classy` will take care of the rest::
         def so_is_this(self):
             return "Looking at me? I guess you're logged in."
 
+You can also override the classmethod `get_decorators`::
+
+    class WhataGreatView(FlaskView):
+
+        @classmethod
+        def get_decorators(cls):
+            return [login_required]
+
+        def this_is_secret(self):
+            return "If you see this, you're logged in."
+
+        def so_is_this(self):
+            return "Looking at me? I guess you're logged in."
+
 
 Before and After
 ----------------
