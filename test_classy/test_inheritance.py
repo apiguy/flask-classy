@@ -17,9 +17,11 @@ def test_override():
     resp = client.get("/inheritance/1234")
     eq_(b"Inheritance Get 1234", resp.data)
 
+
 def test_inherited():
     resp = client.post('/inheritance/')
     eq_(b"Post", resp.data)
+
 
 def test_with_route():
     resp = client.get("/inheritance/with_route")
