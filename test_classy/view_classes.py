@@ -246,6 +246,13 @@ class InheritanceView(BasicView):
         return "Inheritance with route"
 
 
+class DecoratedInheritanceView(DecoratedView):
+
+    @recursive_decorator
+    def get(self, obj_id):
+        return "Decorated Inheritance Get " + obj_id
+
+
 class TrailingSlashView(FlaskView):
     trailing_slash = False
     route_base = '/trailing/'
