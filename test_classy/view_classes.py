@@ -171,6 +171,16 @@ def wraps_decorator(f):
       return f(*args, **kwargs)
     return decorated_view
 
+
+def params_decorator(p_1, p_2):
+    def decorator(f):
+       @wraps(f)
+       def decorated_function(*args, **kwargs):
+           return f(*args, **kwargs)
+       return decorated_function
+    return decorator
+
+
 def recursive_decorator(f):
     @wraps(f)
     def decorated_view(*args, **kwargs):
@@ -203,6 +213,10 @@ class DecoratedView(FlaskView):
     @recursive_decorator
     def post(self):
         return "Post"
+
+    @params_decorator("oneval", "anotherval")
+    def params_decorator(self):
+        return "Params Decorator"
 
     @more_recursive(None)
     def get_some(self):

@@ -47,6 +47,9 @@ def test_recursive_with_route_with_parameter():
     eq_(b"Anotherval 1234", resp.data)
 
 
+def test_params_decorator():
+    resp = client.get('/decorated/params_decorator/')
+    eq_(b"Params Decorator", resp.data)
 
 
 
