@@ -1,6 +1,11 @@
 from flask_classy import FlaskView, route
 from functools import wraps
 
+VALUE1 = "value1"
+
+def get_value():
+    return VALUE1
+
 class BasicView(FlaskView):
 
     def index(self):
@@ -215,8 +220,13 @@ class DecoratedView(FlaskView):
         return "Post"
 
     @params_decorator("oneval", "anotherval")
-    def params_decorator(self):
+    def params_decorator_method(self):
         return "Params Decorator"
+
+    @params_decorator(get_value(), "value")
+    def delete(self, obj_id):
+        return "Params Decorator Delete " + obj_id
+
 
     @more_recursive(None)
     def get_some(self):

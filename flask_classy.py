@@ -308,6 +308,9 @@ def get_true_argspec(method):
         inner_method = cell.cell_contents
         if inner_method is method:
             continue
+        if not inspect.isfunction(inner_method) \
+            and not inspect.ismethod(inner_method):
+            continue
         true_argspec = get_true_argspec(inner_method)
         if true_argspec:
             return true_argspec

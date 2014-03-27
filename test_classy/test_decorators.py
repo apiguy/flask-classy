@@ -48,8 +48,12 @@ def test_recursive_with_route_with_parameter():
 
 
 def test_params_decorator():
-    resp = client.get('/decorated/params_decorator/')
+    resp = client.get('/decorated/params_decorator_method/')
     eq_(b"Params Decorator", resp.data)
+
+def test_params_decorator_delete():
+    resp = client.delete('/decorated/1234')
+    eq_(b"Params Decorator Delete 1234", resp.data)
 
 
 
