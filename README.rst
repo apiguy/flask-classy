@@ -3,6 +3,8 @@ Flask-Classy
 
 .. module:: flask.ext.classy
 
+.. image:: https://travis-ci.org/apiguy/flask-classy.svg?branch=master   :target: https://travis-ci.org/apiguy/flask-classy
+
 Flask-Classy is an extension that adds class-based views to Flask.
 But why?
 

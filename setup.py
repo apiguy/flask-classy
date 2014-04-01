@@ -22,6 +22,8 @@ setup(
     install_requires=[
         'Flask>=0.9'
     ],
+    tests_require=['nose'],
+    test_suite='nose.collector',
     classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
@@ -35,6 +37,5 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
-    ],
-    test_suite='test_classy'
+    ]
 )
