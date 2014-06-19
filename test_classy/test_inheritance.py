@@ -15,7 +15,7 @@ def test_index():
 
 
 def test_override():
-    resp = client.get("/inheritance/1234")
+    resp = client.get("/inheritance/1234/")
     eq_(b"Inheritance Get 1234", resp.data)
 
 

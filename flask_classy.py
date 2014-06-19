@@ -125,9 +125,15 @@ class FlaskView(object):
                     else:
                         methods = [name.upper()]
 
+                    # build_rule returns a rule without trailing slash by
+                    # default
                     rule = cls.build_rule("/", value)
                     if not cls.trailing_slash:
                         rule = rule.rstrip("/")
+                    else:
+                        # Add a trailing slash if trailing_slash is True
+                        # (default)
+                        rule = "%s/" % rule
                     app.add_url_rule(rule, route_name, proxy, methods=methods, subdomain=subdomain)
 
                 else:
