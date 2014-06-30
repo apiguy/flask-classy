@@ -49,6 +49,14 @@ class FlaskView(object):
     route_base = None
     route_prefix = None
     trailing_slash = True
+    special_methods = {
+        "get": ["GET"],
+        "put": ["PUT"],
+        "patch": ["PATCH"],
+        "post": ["POST"],
+        "delete": ["DELETE"],
+        "index": ["GET"],
+    }
 
     @classmethod
     def register(cls, app, route_base=None, subdomain=None, route_prefix=None,
@@ -95,7 +103,6 @@ class FlaskView(object):
 
 
         members = get_interesting_members(FlaskView, cls)
-        special_methods = ["get", "put", "patch", "post", "delete", "index"]
 
         for name, value in members:
             proxy = cls.make_proxy_method(name)
@@ -119,11 +126,8 @@ class FlaskView(object):
 
                         app.add_url_rule(rule, endpoint, proxy, subdomain=subdomain, **options)
 
-                elif name in special_methods:
-                    if name in ["get", "index"]:
-                        methods = ["GET"]
-                    else:
-                        methods = [name.upper()]
+                elif name in cls.special_methods:
+                    methods = cls.special_methods[name]
 
                     rule = cls.build_rule("/", value)
                     if not cls.trailing_slash:
@@ -259,12 +263,16 @@ class FlaskView(object):
             base_rule = parse_rule(route_base)
             cls.base_args = [r[2] for r in base_rule]
         else:
-            if cls.__name__.endswith("View"):
-                route_base = cls.__name__[:-4].lower()
-            else:
-                route_base = cls.__name__.lower()
+            route_base = cls.default_route_base()
 
         return route_base.strip("/")
+
+    @classmethod
+    def default_route_base(cls):
+        if cls.__name__.endswith("View"):
+            return cls.__name__[:-4].lower()
+        else:
+            return cls.__name__.lower()
 
 
     @classmethod
