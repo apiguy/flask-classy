@@ -17,7 +17,6 @@ from werkzeug.routing import parse_rule
 from flask import request, Response, make_response
 import re
 
-_temp_rule_cache = None
 _py2 = sys.version_info[0] == 2
 
 
@@ -28,38 +27,23 @@ def route(rule, **options):
     """
 
     def decorator(f):
-        global _temp_rule_cache
-        if _temp_rule_cache is None:
-            _temp_rule_cache = {f.__name__: [(rule, options)]}
-        elif not f.__name__ in _temp_rule_cache:
-            _temp_rule_cache[f.__name__] = [(rule, options)]
+        # Put the rule cache on the method itself instead of globally
+        if not hasattr(f, '_rule_cache') or f._rule_cache is None:
+            f._rule_cache = {f.__name__: [(rule, options)]}
+        elif not f.__name__ in f._rule_cache:
+            f._rule_cache[f.__name__] = [(rule, options)]
         else:
-            _temp_rule_cache[f.__name__].append((rule, options))
+            f._rule_cache[f.__name__].append((rule, options))
 
         return f
 
     return decorator
 
 
-class _FlaskViewMeta(type):
-
-    def __init__(cls, name, bases, dct):
-        global _temp_rule_cache
-        if _temp_rule_cache:
-            cls._rule_cache = _temp_rule_cache
-            _temp_rule_cache = None
-
-
-# This is how we support metaclasses in both Python 2 and Python 3
-_FlaskViewBase = _FlaskViewMeta('_FlaskViewBase', (object, ), {})
-
-
-class FlaskView(_FlaskViewBase):
+class FlaskView(object):
     """Base view for any class based views implemented with Flask-Classy. Will
     automatically configure routes when registered with a Flask app instance.
     """
-
-    __metaclass__ = _FlaskViewMeta
 
     decorators = []
     route_base = None
@@ -97,7 +81,7 @@ class FlaskView(_FlaskViewBase):
         """
 
         if cls is FlaskView:
-            raise TypeError("cls must be a subclass of FlaskVew, not FlaskView itself")
+            raise TypeError("cls must be a subclass of FlaskView, not FlaskView itself")
 
         if route_base:
             cls.orig_route_base = cls.route_base
@@ -124,8 +108,8 @@ class FlaskView(_FlaskViewBase):
             proxy = cls.make_proxy_method(name)
             route_name = cls.build_route_name(name)
             try:
-                if hasattr(cls, "_rule_cache") and name in cls._rule_cache:
-                    for idx, cached_rule in enumerate(cls._rule_cache[name]):
+                if hasattr(value, "_rule_cache") and name in value._rule_cache:
+                    for idx, cached_rule in enumerate(value._rule_cache[name]):
                         rule, options = cached_rule
                         rule = cls.build_rule(rule)
                         sub, ep, options = cls.parse_options(options)
@@ -135,7 +119,7 @@ class FlaskView(_FlaskViewBase):
 
                         if ep:
                             endpoint = ep
-                        elif len(cls._rule_cache[name]) == 1:
+                        elif len(value._rule_cache[name]) == 1:
                             endpoint = route_name
                         else:
                             endpoint = "%s_%d" % (route_name, idx,)
@@ -331,6 +315,9 @@ def get_true_argspec(method):
     for cell in closure:
         inner_method = cell.cell_contents
         if inner_method is method:
+            continue
+        if not inspect.isfunction(inner_method) \
+            and not inspect.ismethod(inner_method):
             continue
         true_argspec = get_true_argspec(inner_method)
         if true_argspec:

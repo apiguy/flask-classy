@@ -1,6 +1,11 @@
 from flask_classy import FlaskView, route
 from functools import wraps
 
+VALUE1 = "value1"
+
+def get_value():
+    return VALUE1
+
 class BasicView(FlaskView):
 
     def index(self):
@@ -171,6 +176,16 @@ def wraps_decorator(f):
       return f(*args, **kwargs)
     return decorated_view
 
+
+def params_decorator(p_1, p_2):
+    def decorator(f):
+       @wraps(f)
+       def decorated_function(*args, **kwargs):
+           return f(*args, **kwargs)
+       return decorated_function
+    return decorator
+
+
 def recursive_decorator(f):
     @wraps(f)
     def decorated_view(*args, **kwargs):
@@ -203,6 +218,15 @@ class DecoratedView(FlaskView):
     @recursive_decorator
     def post(self):
         return "Post"
+
+    @params_decorator("oneval", "anotherval")
+    def params_decorator_method(self):
+        return "Params Decorator"
+
+    @params_decorator(get_value(), "value")
+    def delete(self, obj_id):
+        return "Params Decorator Delete " + obj_id
+
 
     @more_recursive(None)
     def get_some(self):
@@ -244,6 +268,13 @@ class InheritanceView(BasicView):
     @route('/with_route')
     def with_route(self):
         return "Inheritance with route"
+
+
+class DecoratedInheritanceView(DecoratedView):
+
+    @recursive_decorator
+    def get(self, obj_id):
+        return "Decorated Inheritance Get " + obj_id
 
 
 class TrailingSlashView(FlaskView):
