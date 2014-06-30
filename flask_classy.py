@@ -279,12 +279,16 @@ class FlaskView(_FlaskViewBase):
             base_rule = parse_rule(route_base)
             cls.base_args = [r[2] for r in base_rule]
         else:
-            if cls.__name__.endswith("View"):
-                route_base = cls.__name__[:-4].lower()
-            else:
-                route_base = cls.__name__.lower()
+            route_base = cls.default_route_base()
 
         return route_base.strip("/")
+
+    @classmethod
+    def default_route_base(cls):
+        if cls.__name__.endswith("View"):
+            return cls.__name__[:-4].lower()
+        else:
+            return cls.__name__.lower()
 
 
     @classmethod
