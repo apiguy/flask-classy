@@ -1,6 +1,6 @@
 from flask import Flask
 from .view_classes import (BeforeRequestView, BeforeViewView, AfterRequestView, AfterViewView, DecoratedView,
-                           BeforeRequestReturnsView, BeforeViewReturnsView)
+                           BeforeRequestReturnsView, BeforeViewReturnsView, MakeResponseView)
 from nose.tools import *
 
 app = Flask("wrappers")
@@ -11,6 +11,7 @@ BeforeViewReturnsView.register(app)
 AfterViewView.register(app)
 AfterRequestView.register(app)
 DecoratedView.register(app)
+MakeResponseView.register(app)
 
 client = app.test_client()
 
@@ -45,3 +46,7 @@ def test_before_request_returns():
 def test_before_view_returns():
     resp = client.get("/beforeviewreturns/")
     eq_(b"BEFORE", resp.data)
+
+def test_make_response_view():
+    resp = client.get("/makeresponse/")
+    eq_(b"Make Response", resp.data)

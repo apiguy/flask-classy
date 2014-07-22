@@ -161,6 +161,11 @@ class FlaskView(object):
         endpoint = options.pop('endpoint', None)
         return subdomain, endpoint, options,
 
+    @classmethod
+    def make_response(cls, response):
+        """Allows one to override Flask's make_response function.  This provides
+        an inheritable final decorator on the view being returned."""
+        return make_response(response)
 
     @classmethod
     def make_proxy_method(cls, name):
@@ -199,7 +204,7 @@ class FlaskView(object):
 
             response = view(**request.view_args)
             if not isinstance(response, Response):
-                response = make_response(response)
+                response = cls.make_response(response)
 
             after_view_name = "after_" + name
             if hasattr(i, after_view_name):
