@@ -149,6 +149,15 @@ class AfterRequestView(FlaskView):
     def index(self):
         return "Index"
 
+class MakeResponseView(FlaskView):
+
+    @classmethod
+    def make_response(cls, response):
+        return "Make Response"
+
+    def index(self):
+        return "Index"
+
 class VariedMethodsView(FlaskView):
 
     def index(self):
