@@ -249,6 +249,9 @@ class FlaskView(object):
         result = "/%s" % "/".join(rule_parts)
         return re.sub(r'(/)\1+', r'\1', result)
 
+    @classmethod
+    def get_class_suffix(cls):
+        return "View"
 
     @classmethod
     def get_route_base(cls):
@@ -259,8 +262,9 @@ class FlaskView(object):
             base_rule = parse_rule(route_base)
             cls.base_args = [r[2] for r in base_rule]
         else:
-            if cls.__name__.endswith("View"):
-                route_base = cls.__name__[:-4].lower()
+            suffix = cls.get_class_suffix()
+            if cls.__name__.endswith(suffix):
+                route_base = cls.__name__[:-len(suffix)].lower()
             else:
                 route_base = cls.__name__.lower()
 
