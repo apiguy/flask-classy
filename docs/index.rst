@@ -558,7 +558,7 @@ Before and After
 ----------------
 
 Hey, remember that time when you made that big ol' `Flask` app and then
-had those ``@app.before_reqeust`` and ``@app.after_request``
+had those ``@app.before_request`` and ``@app.after_request``
 decorated methods? Remember how you only wanted some of them to run for
 certain views so you had all those ``if view == the_one_I_care_about:``
 statements and stuff?
