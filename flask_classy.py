@@ -117,6 +117,10 @@ class FlaskView(object):
                         else:
                             endpoint = "%s_%d" % (route_name, idx,)
 
+                        trailing_slash = options.pop('trailing_slash',True)
+                        if not trailing_slash:
+                            rule = rule.rstrip("/")
+
                         app.add_url_rule(rule, endpoint, proxy, subdomain=subdomain, **options)
 
                 elif name in special_methods:
@@ -241,7 +245,7 @@ class FlaskView(object):
             ignored_rule_args += cls.base_args
 
         if method:
-            args = get_true_argspec(method)[0]
+            args = get_true_argspec(method, method.__name__)[0]
             for arg in args:
                 if arg not in ignored_rule_args:
                     rule_parts.append("<%s>" % arg)
@@ -291,7 +295,7 @@ def get_interesting_members(base_class, cls):
             and not member[0].startswith("after_")]
 
 
-def get_true_argspec(method):
+def get_true_argspec(method, raw_method_name=None):
     """Drills through layers of decorators attempting to locate the actual argspec for the method."""
 
     argspec = inspect.getargspec(method)
@@ -301,6 +305,8 @@ def get_true_argspec(method):
     if hasattr(method, '__func__'):
         method = method.__func__
     if not hasattr(method, '__closure__') or method.__closure__ is None:
+        if method.__name__ != raw_method_name:
+            return
         raise DecoratorCompatibilityError
 
     closure = method.__closure__
@@ -311,7 +317,7 @@ def get_true_argspec(method):
         if not inspect.isfunction(inner_method) \
             and not inspect.ismethod(inner_method):
             continue
-        true_argspec = get_true_argspec(inner_method)
+        true_argspec = get_true_argspec(inner_method, raw_method_name)
         if true_argspec:
             return true_argspec
 
