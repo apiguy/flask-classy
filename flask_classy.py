@@ -117,6 +117,10 @@ class FlaskView(object):
                         else:
                             endpoint = "%s_%d" % (route_name, idx,)
 
+                        trailing_slash = options.pop('trailing_slash',True)
+                        if not trailing_slash:
+                            rule = rule.rstrip("/")
+
                         app.add_url_rule(rule, endpoint, proxy, subdomain=subdomain, **options)
 
                 elif name in special_methods:
