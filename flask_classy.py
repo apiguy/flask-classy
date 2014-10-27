@@ -176,7 +176,7 @@ class FlaskView(object):
 
         if cls.decorators:
             for decorator in cls.decorators:
-                view = decorator(view)
+                view = decorator[0](view, **decorator[1]) or decorator(view)
 
         @functools.wraps(view)
         def proxy(**forgettable_view_args):
