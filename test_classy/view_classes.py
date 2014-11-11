@@ -78,6 +78,12 @@ class RouteBaseView(FlaskView):
     def index(self):
         return "Index"
 
+class RouteBaseView2(FlaskView):
+    route_base = "/base-routed/<ident>/"
+
+    def index(self, ident):
+        return "Index with parameter %s" % ident
+
 class RoutePrefixView(FlaskView):
     route_prefix = "/my_prefix/"
 
