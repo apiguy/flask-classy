@@ -645,7 +645,7 @@ The View Wrappin' Method List
 Just to be certain, let's go ahead and review the methods you can write to
 wrap your views:
 
-**before_request(self, name, *args, *kwargs)**
+**before_request(self, name, *args, **kwargs)**
     Will be called before any view in this ``FlaskView`` is called.
 
     :name:       The name of the view that's about to be called.
