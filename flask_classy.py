@@ -14,6 +14,7 @@ import sys
 import functools
 import inspect
 from werkzeug.routing import parse_rule
+from werkzeug.exceptions import HTTPException
 from flask import request, Response, make_response
 import re
 
@@ -197,17 +198,21 @@ class FlaskView(object):
                 if response is not None:
                     return response
 
-            response = view(**request.view_args)
-            if not isinstance(response, Response):
-                response = make_response(response)
+            try:
+                response = view(**request.view_args)
+            except HTTPException as response:
+                raise response
+            finally:
+                if not isinstance(response, Response):
+                    response = make_response(response)
 
-            after_view_name = "after_" + name
-            if hasattr(i, after_view_name):
-                after_view = getattr(i, after_view_name)
-                response = after_view(response)
+                after_view_name = "after_" + name
+                if hasattr(i, after_view_name):
+                    after_view = getattr(i, after_view_name)
+                    response = after_view(response)
 
-            if hasattr(i, "after_request"):
-                response = i.after_request(name, response)
+                if hasattr(i, "after_request"):
+                    response = i.after_request(name, response)
 
             return response
 

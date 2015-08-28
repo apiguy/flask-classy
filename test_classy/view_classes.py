@@ -1,3 +1,4 @@
+from flask import abort
 from flask_classy import FlaskView, route
 from functools import wraps
 
@@ -143,11 +144,18 @@ class AfterViewView(FlaskView):
 
 class AfterRequestView(FlaskView):
 
+    def before_request(self, name):
+        self.__class__.after_called = False
+
     def after_request(self, name, response):
+        self.__class__.after_called = True
         return "After Request"
 
     def index(self):
         return "Index"
+
+    def post(self):
+        abort(422, "Stopped by post")
 
 class VariedMethodsView(FlaskView):
 

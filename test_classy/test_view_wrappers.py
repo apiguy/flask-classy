@@ -30,6 +30,11 @@ def test_after_request():
     resp = client.get("/afterrequest/")
     eq_(b"After Request", resp.data)
 
+def test_after_request_with_abort():
+    resp = client.post("/afterrequest/")
+    ok_(b"Stopped by post" in resp.data)
+    ok_(AfterRequestView.after_called == True)
+
 def test_decorated_view():
     resp = client.get("/decorated/")
     eq_(b"Index", resp.data)
