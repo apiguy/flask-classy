@@ -56,4 +56,6 @@ def test_params_decorator_delete():
     eq_(b"Params Decorator Delete 1234", resp.data)
 
 
-
+def test_explicit_params_decorator():
+    resp = client.get('/decorated/explicit/foo/bar')
+    eq_(b"Explicit param foobar", resp.data)
