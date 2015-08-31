@@ -188,8 +188,8 @@ def params_decorator(p_1, p_2):
 
 def explicit_params_decorator(f):
     @wraps(f)
-    def wrapper(*args, **kwargs):
-        return f(*args, **kwargs)
+    def wrapper(self, arg1, *args, **kwargs):
+        return f(self, arg1, *args, **kwargs)
     return wrapper
 
 
