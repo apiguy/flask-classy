@@ -157,6 +157,9 @@ class AfterRequestView(FlaskView):
     def post(self):
         abort(422, "Stopped by post")
 
+    def put(self):
+        error('UnknownError')
+
 class VariedMethodsView(FlaskView):
 
     def index(self):

@@ -203,7 +203,7 @@ class FlaskView(object):
             except HTTPException as response:
                 raise response
             finally:
-                if not isinstance(response, Response):
+                if response and not isinstance(response, Response):
                     response = make_response(response)
 
                 after_view_name = "after_" + name
