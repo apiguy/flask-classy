@@ -286,6 +286,7 @@ def get_interesting_members(base_class, cls):
     return [member for member in all_members
             if not member[0] in base_members
             and ((hasattr(member[1], "__self__") and not member[1].__self__ in inspect.getmro(cls)) if _py2 else True)
+            and not isinstance(cls.__dict__[member[0]], staticmethod)
             and not member[0].startswith("_")
             and not member[0].startswith("before_")
             and not member[0].startswith("after_")]
