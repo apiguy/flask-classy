@@ -186,6 +186,13 @@ def params_decorator(p_1, p_2):
     return decorator
 
 
+def explicit_params_decorator(f):
+    @wraps(f)
+    def wrapper(self, arg1, *args, **kwargs):
+        return f(self, arg1, *args, **kwargs)
+    return wrapper
+
+
 def recursive_decorator(f):
     @wraps(f)
     def decorated_view(*args, **kwargs):
@@ -253,6 +260,9 @@ class DecoratedView(FlaskView):
     def anotherval(self, val):
         return "Anotherval " + val
 
+    @explicit_params_decorator
+    def explicit(self, arg1, arg2):
+        return "Explicit param " + arg1 + arg2
 
 
 class InheritanceView(BasicView):

@@ -15,6 +15,7 @@ import functools
 import inspect
 from werkzeug.routing import parse_rule
 from flask import request, Response, make_response
+from undecorated import undecorated
 import re
 
 _py2 = sys.version_info[0] == 2
@@ -294,26 +295,7 @@ def get_interesting_members(base_class, cls):
 def get_true_argspec(method):
     """Drills through layers of decorators attempting to locate the actual argspec for the method."""
 
-    argspec = inspect.getargspec(method)
-    args = argspec[0]
-    if args and args[0] == 'self':
-        return argspec
-    if hasattr(method, '__func__'):
-        method = method.__func__
-    if not hasattr(method, '__closure__') or method.__closure__ is None:
-        raise DecoratorCompatibilityError
-
-    closure = method.__closure__
-    for cell in closure:
-        inner_method = cell.cell_contents
-        if inner_method is method:
-            continue
-        if not inspect.isfunction(inner_method) \
-            and not inspect.ismethod(inner_method):
-            continue
-        true_argspec = get_true_argspec(inner_method)
-        if true_argspec:
-            return true_argspec
+    return inspect.getargspec(undecorated(method))
 
 
 class DecoratorCompatibilityError(Exception):
