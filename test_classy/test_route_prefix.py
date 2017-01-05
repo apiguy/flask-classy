@@ -11,7 +11,7 @@ BasicView.register(app, route_prefix='/prefix/')
 
 def test_route_prefix():
     client = app.test_client()
-    resp = client.get('/my_prefix/routeprefix/')
+    resp = client.get('/my_prefix/route-prefix/')
     eq_(b"Index", resp.data)
 
 

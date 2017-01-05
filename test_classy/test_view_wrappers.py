@@ -15,19 +15,19 @@ DecoratedView.register(app)
 client = app.test_client()
 
 def test_before_request():
-    resp = client.get("/beforerequest/")
+    resp = client.get("/before-request/")
     eq_(b"Before Request", resp.data)
 
 def test_before_view():
-    resp = client.get("/beforeview/")
+    resp = client.get("/before-view/")
     eq_(b"Before View", resp.data)
 
 def test_after_view():
-    resp = client.get("/afterview/")
+    resp = client.get("/after-view/")
     eq_(b"After View", resp.data)
 
 def test_after_request():
-    resp = client.get("/afterrequest/")
+    resp = client.get("/after-request/")
     eq_(b"After Request", resp.data)
 
 def test_decorated_view():

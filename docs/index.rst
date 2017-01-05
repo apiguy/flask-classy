@@ -797,6 +797,58 @@ As you can see here, specifying the subdomain to the register method will
 override the explicit subdomain attribute set inside the class.
 
 
+Adding Resource Representations (Get real classy and put on a top hat)
+----------------------------------------------------------------------
+So, you want to use Flask-Classy to make a RESTful API. Not a problem, we got
+you covered. Say you want your API to be able to respond to requests with JSON.
+All you have to do is create a class that defines how to serialize and deserialize
+the data, add it to the `representations` variable on your `FlaskView`.
+
+Here's the code for the JSON Response class::
+
+    # representations.py
+    
+    import json
+    from flask import make_response
+
+    class JsonResource(object):
+        content_type = 'application/json'
+
+        def output(self, data, code, headers=None):
+            dumped = json.dumps(data)
+            response = make_response(dumped, code)
+            if headers:
+                headers.extend({'Content-Type': self.content_type})
+            else:
+                headers = {'Content-Type': self.content_type}
+            response.headers.extend(headers)
+
+            return response
+
+
+        def input(self, data):
+            loaded = loads(data)
+            
+            return loaded
+
+::
+
+The go ahead and add this new resource representation to your `FlaskView`::
+
+    # views.py
+
+    from flask.ext.classy import FlaskView
+    from representations import JsonResource
+
+    class CoolJSONView(FlaskView):
+        representations = {'application/json': JsonResource()}
+
+        def index(self):
+            return {'This is JSON': 'How Cool is that'}
+
+::
+
+
 Questions?
 ----------
 

@@ -46,6 +46,7 @@ class FlaskView(object):
     """
 
     decorators = []
+    representations = {}
     route_base = None
     route_prefix = None
     trailing_slash = True
@@ -198,8 +199,26 @@ class FlaskView(object):
                     return response
 
             response = view(**request.view_args)
+            if isinstance(response, tuple):
+                code = response[1]
+                response = response[0]
+            else:
+                code = 200
             if not isinstance(response, Response):
-                response = make_response(response)
+                if not cls.representations:
+                    # No representations defined, then the default is to just output
+                    # what the view function returned as a response
+                    response = make_response(response)
+                else:
+                    # Return the representation that best matches the representations
+                    # in the Accept header
+                    resp_representation = request.accept_mimetypes.best_match(cls.representations.keys())
+                    if resp_representation:
+                        response = cls.representations[resp_representation].output(response, code)
+                    else:
+                        # Nothing adequate found, make the response any one of the representations defined
+                        response = cls.representations[list(cls.representations.keys())[0]].output(
+                                        response, code)
 
             after_view_name = "after_" + name
             if hasattr(i, after_view_name):
@@ -241,10 +260,14 @@ class FlaskView(object):
             ignored_rule_args += cls.base_args
 
         if method:
-            args = get_true_argspec(method)[0]
-            for arg in args:
+            argspec = get_true_argspec(method)
+            args = argspec[0]
+            query_params = argspec[3] # All default args that should be ignored
+            for i, arg in enumerate(args):
                 if arg not in ignored_rule_args:
-                    rule_parts.append("<%s>" % arg)
+                    if not query_params or len(args) - i > len(query_params):
+                        # This is not optional param, so it's not query argument
+                        rule_parts.append("<%s>" % arg)
 
         result = "/%s" % "/".join(rule_parts)
         return re.sub(r'(/)\1+', r'\1', result)
@@ -254,15 +277,21 @@ class FlaskView(object):
     def get_route_base(cls):
         """Returns the route base to use for the current class."""
 
+        first_cap_re = re.compile('(.)([A-Z][a-z]+)')
+        all_cap_re = re.compile('([a-z0-9])([A-Z])')
+        def dashify(name):
+            s1 = first_cap_re.sub(r'\1-\2', name)
+            return all_cap_re.sub(r'\1-\2', s1).lower()
+
         if cls.route_base is not None:
             route_base = cls.route_base
             base_rule = parse_rule(route_base)
             cls.base_args = [r[2] for r in base_rule]
         else:
             if cls.__name__.endswith("View"):
-                route_base = cls.__name__[:-4].lower()
+                route_base = dashify(cls.__name__[:-4])
             else:
-                route_base = cls.__name__.lower()
+                route_base = dashify(cls.__name__)
 
         return route_base.strip("/")
 
