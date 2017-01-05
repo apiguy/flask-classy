@@ -107,8 +107,10 @@ class FlaskView(object):
                         rule = cls.build_rule(rule)
                         sub, ep, options = cls.parse_options(options)
 
-                        if not subdomain and sub:
+                        if sub:
                             subdomain = sub
+                        else:
+                            subdomain = None
 
                         if ep:
                             endpoint = ep
