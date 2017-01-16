@@ -52,7 +52,7 @@ class FlaskView(object):
 
     @classmethod
     def register(cls, app, route_base=None, subdomain=None, route_prefix=None,
-                 trailing_slash=None):
+                 trailing_slash=None, instance=None):
         """Registers a FlaskView class for use with a specific instance of a
         Flask app. Any methods not prefixes with an underscore are candidates
         to be routed and will have routes registered when this method is
@@ -70,6 +70,8 @@ class FlaskView(object):
         :param route_prefix: A prefix to be applied to all routes registered
                              for this class. Precedes route_base. Overrides
                              the class' route_prefix if it has been set.
+
+        :param instance: a previous instance of the class
         """
 
         if cls is FlaskView:
@@ -98,7 +100,7 @@ class FlaskView(object):
         special_methods = ["get", "put", "patch", "post", "delete", "index"]
 
         for name, value in members:
-            proxy = cls.make_proxy_method(name)
+            proxy = cls.make_proxy_method(name, instance)
             route_name = cls.build_route_name(name)
             try:
                 if hasattr(value, "_rule_cache") and name in value._rule_cache:
@@ -163,15 +165,18 @@ class FlaskView(object):
 
 
     @classmethod
-    def make_proxy_method(cls, name):
+    def make_proxy_method(cls, name, instance=None):
         """Creates a proxy function that can be used by Flasks routing. The
         proxy instantiates the FlaskView subclass and calls the appropriate
         method.
 
         :param name: the name of the method to create a proxy for
+        :param instance: a previous instance of the class
         """
-
-        i = cls()
+        if instance is None:
+            i = cls()
+        else:
+            i = instance
         view = getattr(i, name)
 
         if cls.decorators:
