@@ -294,7 +294,7 @@ def get_interesting_members(base_class, cls):
 def get_true_argspec(method):
     """Drills through layers of decorators attempting to locate the actual argspec for the method."""
 
-    argspec = inspect.getargspec(method)
+    argspec = inspect.getfullargspec(method)
     args = argspec[0]
     if args and args[0] == 'self':
         return argspec
