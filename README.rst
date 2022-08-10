@@ -59,7 +59,7 @@ when you see it being used. Let's go ahead and create a little app to
 see how Flask-Classy works::
 
     from flask import Flask
-    from flask.ext.classy import FlaskView
+    from flask_classy import FlaskView
 
     # we'll make a list to hold some quotes for our app
     quotes = [
